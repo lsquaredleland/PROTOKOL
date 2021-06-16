@@ -1,12 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Web3ReactProvider } from '@web3-react/core'
+import { HashRouter } from 'react-router-dom'
+import App from './pages/App'
+import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
+import getLibrary from './utils/getLibrary'
+import { ProtocolsProvider } from 'contexts/Protocols';
+
+
+const Providers: React.FC = ({ children }) => {
+  return (
+    <ProtocolsProvider>
+      {children}
+    </ProtocolsProvider>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FixedGlobalStyle />
+    <Web3ReactProvider getLibrary={getLibrary}>
+      {/* <Web3ProviderNetwork getLibrary={getLibrary}> */}
+        <Providers>
+          {/* <Updaters /> */}
+          <ThemeProvider>
+            <ThemedGlobalStyle />
+            <HashRouter>
+              <App />
+            </HashRouter>
+          </ThemeProvider>
+        </Providers>
+      {/* </Web3ProviderNetwork> */}
+    </Web3ReactProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
