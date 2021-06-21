@@ -8,12 +8,15 @@ import App from './pages/App'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
 import getLibrary from './utils/getLibrary'
 import { ProtocolsProvider } from 'contexts/Protocols';
+import { LeaderboardProvider } from 'contexts/Leaderboard';
 
 
 const Providers: React.FC = ({ children }) => {
   return (
     <ProtocolsProvider>
-      {children}
+      <LeaderboardProvider>
+        {children}
+      </LeaderboardProvider>
     </ProtocolsProvider>
   );
 };

@@ -18,10 +18,8 @@ You will also see any lint errors in the console.
 
 # Protocol KOL Product
 
-## Organization
+Who are the crypto KOL's weighted by total asset value of votes?
 
- * ProtocolContext -> knows which protocols are currently active
- * LeaderboardContext
- * > iterates through all the active protocols and get's top level data
- * PoliticanContext
- * > detailed information on selected address (NOT top level data)
+## Footnotes
+
+* Remember to re-integrate social features "allIdenties" in `fetchDelegatesFromClient`, etc...

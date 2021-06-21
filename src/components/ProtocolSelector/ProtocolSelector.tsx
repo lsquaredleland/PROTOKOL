@@ -1,6 +1,6 @@
 import { GovernanceInfo } from 'contexts/Protocols/types';
 import styled from 'styled-components'
-import { useProtocols } from '../contexts/Protocols'
+import { useProtocols } from 'contexts/Protocols'
 
 const Circle = styled.img`
   height: 50px;

@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import ProposalDetails from './ProposalDetails'
 import ProtocolSelector from 'components/ProtocolSelector'
+import Leaderboard from 'components/Leaderboard'
 
 const SiteWrapper = styled.div`
   height: 100vh;
@@ -48,6 +49,7 @@ const Blank = () => {
   return (
     <>
       <ProtocolSelector />
+      <Leaderboard />
     </>
   )
 }
