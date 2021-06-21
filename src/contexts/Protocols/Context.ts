@@ -1,5 +1,4 @@
 import { createContext } from "react";
-import { UNISWAP_GOVERNANCE } from "./data";
 import { GovernanceInfo } from "./types";
 
 interface ProtocolsContext {

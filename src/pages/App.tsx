@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import ProposalDetails from './ProposalDetails'
-import { useProtocols } from '../contexts/Protocols'
 import ProtocolSelector from 'components/ProtocolSelector'
 
 const SiteWrapper = styled.div`

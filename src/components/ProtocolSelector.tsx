@@ -22,14 +22,16 @@ const ProtocolIconWrapper = styled.div`
 type ProtocolIconProps = {
   protocol: GovernanceInfo;
   isActive: Boolean;
+  onClick: (arg0: GovernanceInfo, arg1: Boolean) => void
 }
 
-const ProtocolIcon = ({ protocol, isActive }: ProtocolIconProps) => (
+const ProtocolIcon = ({ protocol, isActive, onClick }: ProtocolIconProps) => (
   <ProtocolIconWrapper>
     <Circle
       src={protocol.logo}
       alt={protocol.name}
       style={{border: isActive ? '2px solid orange' : 'none'}}
+      onClick={() => onClick(protocol, isActive)}
     />
     {protocol.name}
   </ProtocolIconWrapper>
@@ -38,12 +40,24 @@ const ProtocolIcon = ({ protocol, isActive }: ProtocolIconProps) => (
 export default function ProtocolSelector() {
   const { activeProtocols, setActiveProtocols, allProtocols } = useProtocols();
 
+  // Question: Should user be able to select 0 protocols?
+  const handleProtocolToggle = (protocol: GovernanceInfo, isActive: Boolean) => {
+    if (isActive && activeProtocols.length > 1) {
+      // Remove protocol
+      setActiveProtocols(activeProtocols.filter(({id}) => id !== protocol.id));
+    } else {
+      setActiveProtocols(activeProtocols.concat(protocol));
+    }
+  }
+
   return (
     <ProtocolRow>
       {allProtocols.map((protocol: GovernanceInfo) => (
         <ProtocolIcon
+          key={protocol.id}
           protocol={protocol}
           isActive={activeProtocols.map(({id}) => id).indexOf(protocol.id) !== -1}
+          onClick={handleProtocolToggle}
         />
       ))}
     </ProtocolRow>
