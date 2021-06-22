@@ -10,7 +10,9 @@ import { DelegateData, DelegateDataPrice, DelegateDataMulti } from './types'
 import { RADICLE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE} from "contexts/Protocols/data";
 import { useCallback } from "react";
 import { useRef } from "react";
-// import { usePrices } from "contexts/Prices";
+import { usePrices } from "contexts/Prices";
+import groupBy from "lodash/groupBy";
+import sortBy from "lodash/sortBy";
 
 
 interface RawResponse {
@@ -27,10 +29,62 @@ const Provider: React.FC = ({ children }) => {
 
   const [activeLeaderboard, setActiveLeaderboard] = useState<Array<GovernanceInfo>>([]);
   const rawData = useRef<RawResponse>({})
-  const activeProtocolData = useRef<DelegateDataMulti[]>([])
+  const activeLeaderboardData = useRef<DelegateDataMulti[]>([])
 
-  // const { currentPrices } = usePrices()
-  // Calling a context within another context, is this wise, or should supply from outside?
+  const { currentPrices } = usePrices() // Calling a context within another context, is this wise, or should supply from outside?
+
+  // FIX: being called prior to all data has loaded
+  useEffect(() => {
+    const protocolKeys = activeLeaderboard.map((protocol: GovernanceInfo) => protocol.id)
+    
+    let allRawData: Array<DelegateDataPrice> = [];
+    protocolKeys.forEach((protocolId: string) => {
+      // should check for all data loaded or something...
+      if (protocolId in rawData.current) {
+        const intermediate: DelegateDataPrice[] = rawData.current[protocolId].map((datapoint: DelegateData) => {
+          return ({
+            ...datapoint,
+            value: datapoint.delegatedVotes * currentPrices[protocolId],
+            protocolId,
+          })
+        })
+        allRawData = allRawData.concat(intermediate);
+        
+      }
+    })
+
+    // 1. Grouping + calculating top level value
+    // 2. Sort `allRawData` by value of delegated tokens
+    const grouped = groupBy(allRawData, ({ id }: DelegateDataPrice) => id)
+    const delegatesIds = Object.keys(grouped);
+    const delegatesValue: DelegateDataMulti[] = delegatesIds.map((id) => {
+      const delegateDatas: DelegateDataPrice[] = grouped[id];
+      const { EOA, autonomous, handle, imageURL } = delegateDatas[0]
+      const value = delegateDatas.reduce((accumulator: number, current: DelegateDataPrice) => {
+        return accumulator + current.value
+      }, 0)
+
+      const perProtocol: any = {}
+      delegateDatas.forEach((protocol: DelegateDataPrice) => {
+        perProtocol[protocol.protocolId] = protocol
+      })
+
+      return {
+        id,
+        EOA,
+        autonomous,
+        handle,
+        imageURL,
+        value,
+        perProtocol
+      }
+    })
+
+    activeLeaderboardData.current = sortBy(delegatesValue, [(d: DelegateDataMulti) => -1 * d.value])
+    console.log(activeLeaderboardData.current);
+
+  }, [activeLeaderboard, currentPrices])
+
 
 
   const { library } = useActiveWeb3React();

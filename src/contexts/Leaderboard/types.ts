@@ -17,7 +17,8 @@ export interface DelegateData {
 }
 
 export interface DelegateDataPrice extends DelegateData {
-  prices: number;
+  value: number;
+  protocolId: string;
 }
 
 export interface DelegateDataMulti {
@@ -25,7 +26,8 @@ export interface DelegateDataMulti {
   EOA: boolean | undefined
   autonomous: boolean | undefined
   handle: string | undefined
-  imageIRL?: string | undefined
+  imageURL?: string | undefined
+  value: number
   perProtocol: {
     [protocolId: string] : DelegateDataPrice
   }
