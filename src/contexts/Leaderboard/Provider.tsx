@@ -1,7 +1,7 @@
 import { compoundClient, poolClient, radicleClient, uniswapClient } from "apollo/client";
 import React, { useState, useEffect } from "react";
 import Context from "./Context";
-import { fetchTopDelegates } from "./fetchDelegates"
+import { fetchTopDelegates } from "./fetch/fetchDelegates"
 import { useActiveWeb3React } from "hooks/connectivity"
 import { GovernanceInfo } from "contexts/Protocols/types";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
@@ -13,79 +13,89 @@ import { useRef } from "react";
 import { usePrices } from "contexts/Prices";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
+import difference from "lodash/difference";
+import { ProtocolPrices } from "contexts/Prices/types";
 
 
 interface RawResponse {
   [id: string]: DelegateData[];
 }
 
-const Provider: React.FC = ({ children }) => {
-  const clients = {
-    [RADICLE_GOVERNANCE.id]: radicleClient,
-    [POOL_TOGETHER_GOVERNANCE.id]: poolClient,
-    [UNISWAP_GOVERNANCE.id]: uniswapClient,
-    [COMPOUND_GOVERNANCE.id]: compoundClient,
-  }
+const clients = {
+  [RADICLE_GOVERNANCE.id]: radicleClient,
+  [POOL_TOGETHER_GOVERNANCE.id]: poolClient,
+  [UNISWAP_GOVERNANCE.id]: uniswapClient,
+  [COMPOUND_GOVERNANCE.id]: compoundClient,
+}
 
+const generateActiveleaderboardData = function(
+  activeLeaderboard: GovernanceInfo[],
+  rawData: React.MutableRefObject<RawResponse>,
+  currentPrices: ProtocolPrices
+): DelegateDataMulti[] {
+  const protocolKeys = activeLeaderboard.map((protocol: GovernanceInfo) => protocol.id)
+  
+  let allRawData: Array<DelegateDataPrice> = [];
+  protocolKeys.forEach((protocolId: string) => {
+    const intermediate: DelegateDataPrice[] = rawData.current[protocolId].map((datapoint: DelegateData) => {
+      return ({
+        ...datapoint,
+        value: datapoint.delegatedVotes * currentPrices[protocolId],
+        protocolId,
+      })
+    })
+    allRawData = allRawData.concat(intermediate);
+  })
+
+  // 1. Grouping + calculating top level value
+  // 2. Sort `allRawData` by value of delegated tokens
+  const grouped = groupBy(allRawData, ({ id }: DelegateDataPrice) => id)
+  const delegatesIds = Object.keys(grouped);
+  const delegatesValue: DelegateDataMulti[] = delegatesIds.map((id) => {
+    const delegateDatas: DelegateDataPrice[] = grouped[id];
+    const { EOA, autonomous, handle, imageURL } = delegateDatas[0]
+    const value = delegateDatas.reduce((accumulator: number, current: DelegateDataPrice) => {
+      return accumulator + current.value
+    }, 0)
+
+    const perProtocol: any = {}
+    delegateDatas.forEach((protocol: DelegateDataPrice) => {
+      perProtocol[protocol.protocolId] = protocol
+    })
+
+    return {
+      id,
+      EOA,
+      autonomous,
+      handle,
+      imageURL,
+      value,
+      perProtocol
+    }
+  })
+
+  return sortBy(delegatesValue, [(d: DelegateDataMulti) => -1 * d.value])
+}
+
+// TODO: hard refresh of all data
+const Provider: React.FC = ({ children }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<Array<GovernanceInfo>>([]);
   const rawData = useRef<RawResponse>({})
   const activeLeaderboardData = useRef<DelegateDataMulti[]>([])
+  const [dataLoaded, setDataLoaded] = useState<Array<String>>([]);
 
-  const { currentPrices } = usePrices() // Calling a context within another context, is this wise, or should supply from outside?
+  const { currentPrices } = usePrices() // Question: calling a Context within another Context ok?
 
-  // FIX: being called prior to all data has loaded
   useEffect(() => {
-    const protocolKeys = activeLeaderboard.map((protocol: GovernanceInfo) => protocol.id)
-    
-    let allRawData: Array<DelegateDataPrice> = [];
-    protocolKeys.forEach((protocolId: string) => {
-      // should check for all data loaded or something...
-      if (protocolId in rawData.current) {
-        const intermediate: DelegateDataPrice[] = rawData.current[protocolId].map((datapoint: DelegateData) => {
-          return ({
-            ...datapoint,
-            value: datapoint.delegatedVotes * currentPrices[protocolId],
-            protocolId,
-          })
-        })
-        allRawData = allRawData.concat(intermediate);
-        
-      }
-    })
+    const diff = difference(activeLeaderboard.map(({id}: GovernanceInfo) => id), dataLoaded)
+    if (diff.length > 0) {
+      return // ensuring that all data is loaded prior to running
+    }
 
-    // 1. Grouping + calculating top level value
-    // 2. Sort `allRawData` by value of delegated tokens
-    const grouped = groupBy(allRawData, ({ id }: DelegateDataPrice) => id)
-    const delegatesIds = Object.keys(grouped);
-    const delegatesValue: DelegateDataMulti[] = delegatesIds.map((id) => {
-      const delegateDatas: DelegateDataPrice[] = grouped[id];
-      const { EOA, autonomous, handle, imageURL } = delegateDatas[0]
-      const value = delegateDatas.reduce((accumulator: number, current: DelegateDataPrice) => {
-        return accumulator + current.value
-      }, 0)
-
-      const perProtocol: any = {}
-      delegateDatas.forEach((protocol: DelegateDataPrice) => {
-        perProtocol[protocol.protocolId] = protocol
-      })
-
-      return {
-        id,
-        EOA,
-        autonomous,
-        handle,
-        imageURL,
-        value,
-        perProtocol
-      }
-    })
-
-    activeLeaderboardData.current = sortBy(delegatesValue, [(d: DelegateDataMulti) => -1 * d.value])
-    console.log(activeLeaderboardData.current);
-
-  }, [activeLeaderboard, currentPrices])
-
-
+    const data = generateActiveleaderboardData(activeLeaderboard, rawData, currentPrices)
+    activeLeaderboardData.current = data
+    console.log('activeLeaderboardData', data)
+  }, [activeLeaderboard, currentPrices, dataLoaded])
 
   const { library } = useActiveWeb3React();
 
@@ -105,7 +115,7 @@ const Provider: React.FC = ({ children }) => {
           fetchTopDelegates(client, library).then(async delegateData => {
             if (delegateData) {
               rawData.current[id] = delegateData
-              console.log("delegateData", id, delegateData)
+              setDataLoaded((prevDataLoaded) => prevDataLoaded.concat([id]))
             }
           })
       } catch (e) {  
