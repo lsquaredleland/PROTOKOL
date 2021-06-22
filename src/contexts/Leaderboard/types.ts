@@ -16,6 +16,21 @@ export interface DelegateData {
   imageURL?: string | undefined
 }
 
+export interface DelegateDataPrice extends DelegateData {
+  prices: number;
+}
+
+export interface DelegateDataMulti {
+  id: string
+  EOA: boolean | undefined
+  autonomous: boolean | undefined
+  handle: string | undefined
+  imageIRL?: string | undefined
+  perProtocol: {
+    [protocolId: string] : DelegateDataPrice
+  }
+}
+
 // Consider moving all social types elsewhere
 export interface TwitterEntry {
   handle: string | undefined

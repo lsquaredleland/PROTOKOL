@@ -6,9 +6,11 @@ import { useActiveWeb3React } from "hooks/connectivity"
 import { GovernanceInfo } from "contexts/Protocols/types";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
-import { DelegateData } from './types'
+import { DelegateData, DelegateDataPrice, DelegateDataMulti } from './types'
 import { RADICLE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE} from "contexts/Protocols/data";
-import { usePrices } from "contexts/Prices";
+import { useCallback } from "react";
+import { useRef } from "react";
+// import { usePrices } from "contexts/Prices";
 
 
 interface RawResponse {
@@ -24,7 +26,8 @@ const Provider: React.FC = ({ children }) => {
   }
 
   const [activeLeaderboard, setActiveLeaderboard] = useState<Array<GovernanceInfo>>([]);
-  const [rawData, setRawData] = useState<RawResponse>({});
+  const rawData = useRef<RawResponse>({})
+  const activeProtocolData = useRef<DelegateDataMulti[]>([])
 
   // const { currentPrices } = usePrices()
   // Calling a context within another context, is this wise, or should supply from outside?
@@ -36,30 +39,36 @@ const Provider: React.FC = ({ children }) => {
   // ^move this data into Contexts
   // const [allIdentities] = useAllIdentities()
 
-  // Can't useEffect here -> useMemo instead?
-  useEffect(() => {
-    async function fetchTopDelegateData(
+  // Behaviour seems the same w/ or w/o useCallback?
+  const fetchTopDelegateData = useCallback(
+    async (
       client: ApolloClient<NormalizedCacheObject>,
       id: string
-    ) {
+    ) => {
       try {
         library &&
           client &&
           fetchTopDelegates(client, library).then(async delegateData => {
             if (delegateData) {
-              setRawData({ ...rawData, ...{[id]: delegateData} })
+              rawData.current[id] = delegateData
               console.log("delegateData", id, delegateData)
             }
           })
       } catch (e) {  
         console.log('ERROR:' + e)
       }
-    }
-    // This iteration will cause rerenders...alternatively can wait for all data
+    },
+    [library, clients, activeLeaderboard, rawData]
+  )
+  
+  useEffect(() => {
+    const keys = Object.keys(rawData.current)
     activeLeaderboard.forEach(({ id }: GovernanceInfo) => {
-      // fetchTopDelegateData(clients[id], id)  
+      if (keys.indexOf(id) === -1) {
+        fetchTopDelegateData(clients[id], id)
+      }
     })
-  }, [library, clients, activeLeaderboard, setRawData])
+  }, [fetchTopDelegateData, activeLeaderboard, rawData])
   
 
   return (

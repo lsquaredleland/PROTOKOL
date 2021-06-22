@@ -7,7 +7,7 @@ import { GovernanceInfo } from "./types";
 const Provider: React.FC = ({ children }) => {
   // Question: should below be an object or array is sufficient?
   const [activeProtocols, setActiveProtocols] = useState<Array<GovernanceInfo>>(
-    [UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE]
+    [COMPOUND_GOVERNANCE] // UNISWAP_GOVERNANCE
   );
 
   const allProtocols = CURRENT_SUPPORTED_PROTOCOLS
