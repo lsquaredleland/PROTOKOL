@@ -28,7 +28,7 @@ const ContentWrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   border: 2px solid black; /* To remove */
-  padding-top: 64px;
+  margin-top: 32px;
   align-items: center;
   flex: 1;
   overflow-y: auto;
@@ -42,15 +42,16 @@ const ContentWrapper = styled.div`
   `};
 `
 
-const Marginer = styled.div`
-  margin-top: 5rem;
+const SmallMarginer = styled.div`
+  margin-top: 2.5rem;
 `
 
 const Blank = () => {
   return (
     <>
+      <h2>Governance Rankings</h2>
       <ProtocolSelector />
-      <Marginer />
+      <SmallMarginer />
       <Leaderboard />
     </>
   )
@@ -76,8 +77,8 @@ export default function App() {
               <Route path="/" component={Blank} />
             </Switch>
           </Web3ReactManager>
-          <Marginer />
         </ContentWrapper>
+        <SmallMarginer />
       </SiteWrapper>
     </Suspense>
   )

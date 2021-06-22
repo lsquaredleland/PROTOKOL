@@ -16,7 +16,7 @@ You will also see any lint errors in the console.
 
 ----------
 
-# Protocol KOL Product
+# ProtoKOL (protocol / goverance KOLs)
 
 Who are the crypto KOL's weighted by total asset value of votes?
 

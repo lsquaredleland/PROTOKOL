@@ -28,7 +28,7 @@ const clients = {
   [COMPOUND_GOVERNANCE.id]: compoundClient,
 }
 
-const generateActiveleaderboardData = function(
+const generateleaderboardRankings = function(
   activeLeaderboard: GovernanceInfo[],
   rawData: React.MutableRefObject<RawResponse>,
   currentPrices: ProtocolPrices
@@ -81,10 +81,15 @@ const generateActiveleaderboardData = function(
 const Provider: React.FC = ({ children }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<Array<GovernanceInfo>>([]);
   const rawData = useRef<RawResponse>({})
-  const activeLeaderboardData = useRef<DelegateDataMulti[]>([])
+  // const leaderboardRankings = useRef<DelegateDataMulti[]>([])
+
+  const [leaderboardRankings, setLeaderboardRankings] = useState<DelegateDataMulti[]>([]);
+
   const [dataLoaded, setDataLoaded] = useState<Array<String>>([]);
 
-  const { currentPrices } = usePrices() // Question: calling a Context within another Context ok?
+  const { currentPrices } = usePrices()
+  // Question: calling a Context within another Context ok?
+  // ^b/c active protocols are being passed in rather than grabbed like usePrices() here...
 
   useEffect(() => {
     const diff = difference(activeLeaderboard.map(({id}: GovernanceInfo) => id), dataLoaded)
@@ -92,9 +97,8 @@ const Provider: React.FC = ({ children }) => {
       return // ensuring that all data is loaded prior to running
     }
 
-    const data = generateActiveleaderboardData(activeLeaderboard, rawData, currentPrices)
-    activeLeaderboardData.current = data
-    console.log('activeLeaderboardData', data)
+    const data = generateleaderboardRankings(activeLeaderboard, rawData, currentPrices)
+    setLeaderboardRankings(data)
   }, [activeLeaderboard, currentPrices, dataLoaded])
 
   const { library } = useActiveWeb3React();
@@ -122,7 +126,7 @@ const Provider: React.FC = ({ children }) => {
         console.log('ERROR:' + e)
       }
     },
-    [library, clients, activeLeaderboard, rawData]
+    [library, rawData]
   )
   
   useEffect(() => {
@@ -138,7 +142,8 @@ const Provider: React.FC = ({ children }) => {
   return (
     <Context.Provider
       value={{
-        setActiveLeaderboard
+        setActiveLeaderboard,
+        leaderboardRankings
       }}
     >
       {children}
