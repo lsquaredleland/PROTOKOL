@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import ProposalDetails from './ProposalDetails'
 import ProtocolSelector from 'components/ProtocolSelector'
 import Leaderboard from 'components/Leaderboard'
+import Web3ReactManager from 'components/Web3ReactManager'
 
 const SiteWrapper = styled.div`
   height: 100vh;
@@ -49,6 +50,7 @@ const Blank = () => {
   return (
     <>
       <ProtocolSelector />
+      <Marginer />
       <Leaderboard />
     </>
   )
@@ -65,13 +67,15 @@ export default function App() {
           <Polling />
           <Overview />
           <TopLevelModals /> */}
-          <Switch>
-            {/* <Route exact strict path="/delegates/:protocolID" component={Delegates} />
-            <Route exact strict path="/proposals/:protocolID" component={Proposals} /> */}
-            <Route exact strict path="/proposals/:protocolID/:proposalID" component={ProposalDetails} />
-            {/* <Route exact strict path="/delegates/:protocolID/:delegateAddress" component={DelegateInfo} /> */}
-            <Route path="/" component={Blank} />
-          </Switch>
+          <Web3ReactManager>
+            <Switch>
+              {/* <Route exact strict path="/delegates/:protocolID" component={Delegates} />
+              <Route exact strict path="/proposals/:protocolID" component={Proposals} /> */}
+              <Route exact strict path="/proposals/:protocolID/:proposalID" component={ProposalDetails} />
+              {/* <Route exact strict path="/delegates/:protocolID/:delegateAddress" component={DelegateInfo} /> */}
+              <Route path="/" component={Blank} />
+            </Switch>
+          </Web3ReactManager>
           <Marginer />
         </ContentWrapper>
       </SiteWrapper>

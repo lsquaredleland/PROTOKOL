@@ -1,6 +1,6 @@
 import { TOP_DELEGATES, TOP_DELEGATES_OFFSET } from "apollo/queries"
 import { Web3Provider } from '@ethersproject/providers'
-import { DelegateData, Identities } from './types'
+import { DelegateData } from './types'
 import fetchProfileData from 'utils/fetchProfileData'
 import isAddress from 'utils/isAddress'
 import { DocumentNode } from 'graphql'

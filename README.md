@@ -23,3 +23,4 @@ Who are the crypto KOL's weighted by total asset value of votes?
 ## Footnotes
 
 * Remember to re-integrate social features "allIdenties" in `fetchDelegatesFromClient`, etc...
+* Remember to update .env file -> don't reuse sybil's endpoint

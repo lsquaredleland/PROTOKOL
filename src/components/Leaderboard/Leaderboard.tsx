@@ -10,7 +10,7 @@ export default function Leaderboard() {
     // Fetch data on visible protocols
     // Behind the scenes don't actively fetch() -> check if cached
     setActiveLeaderboard(activeProtocols);
-  }, [activeProtocols])
+  }, [activeProtocols, setActiveLeaderboard])
 
   return (
     <div>Leaderboard</div>
