@@ -25,7 +25,7 @@ const SiteWrapper = styled.div`
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 600px;
+  width: min(600px,99%);
   margin: 0 auto;
   border: 2px solid black; /* To remove */
   margin-top: 32px;
@@ -49,7 +49,8 @@ const SmallMarginer = styled.div`
 const Blank = () => {
   return (
     <>
-      <h2>Governance Rankings</h2>
+      <h2>ProtoKOLs</h2>
+      <h3>Who are the governance KOLs?</h3>
       <ProtocolSelector />
       <SmallMarginer />
       <Leaderboard />

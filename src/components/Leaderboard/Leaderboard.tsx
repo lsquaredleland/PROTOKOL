@@ -10,6 +10,11 @@ const LeaderBoardBox = styled.div`
   width: 90%;
   overflow: hidden;
   font-family: monospace;
+
+  // Compress margin when smaller device
+  @media (max-width: 425px) {
+    width: 95%
+  }
 `
 
 const ScrollArea = styled.div`
@@ -22,15 +27,30 @@ const ScrollArea = styled.div`
 
 const Row = styled.div`
   height: 50px;
+  line-height: 50px;
   display: flex;
   justify-content: space-between;
   text-align: right;
 `
+const Header = styled(Row)`
+  pointer-events: none;
+  text-align: center;
+
+  // All seems hacky
+  position: sticky;
+  top: 0px;
+  background-color: white;
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 2px solid black;
+`
+
 const Address = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 150px;
+  width: 35%;
+  min-width: 80px;
   text-align: left;
 `;
 
@@ -61,14 +81,14 @@ const totalConstituents = (perProtocol: DelegateDataPrice[]) : number => {
 }
 
 const LeaderBoardTitle = () => (
-  <Row>
-      <SmallNumber>🏆</SmallNumber>
-      <Address>📛</Address>
-      <VoteWeight>💪</VoteWeight>
-      <SmallNumber>👥</SmallNumber>
-      <SmallNumber>🏛️</SmallNumber> 
-      <SmallNumber>🗳️</SmallNumber> 
-    </Row>
+  <Header>
+    <SmallNumber>🏆</SmallNumber>
+    <Address>📛</Address>
+    <VoteWeight>💪</VoteWeight>
+    <SmallNumber>👥</SmallNumber>
+    <SmallNumber>🏛️</SmallNumber> 
+    <SmallNumber>🗳️</SmallNumber> 
+  </Header>
 )
 
 const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
