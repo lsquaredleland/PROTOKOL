@@ -9,6 +9,7 @@ import { formatPrice } from 'utils/misc';
 const LeaderBoardBox = styled.div`
   width: 90%;
   overflow: hidden;
+  font-family: monospace;
 `
 
 const ScrollArea = styled.div`
@@ -23,14 +24,24 @@ const Row = styled.div`
   height: 50px;
   display: flex;
   justify-content: space-between;
-
+  text-align: right;
 `
 const Address = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 150px;
+  text-align: left;
 `;
+
+const VoteWeight = styled.div`
+  width: 140px;
+  direction: rtl;
+`
+
+const SmallNumber = styled.div`
+  min-width: 20px;
+`
 
 type LeaderboardRowProps = {
   rank: number,
@@ -43,19 +54,38 @@ const totalVotes = (perProtocol: DelegateDataPrice[]) : number => {
   }, 0)
 }
 
+const totalConstituents = (perProtocol: DelegateDataPrice[]) : number => {
+  return perProtocol.reduce((accumulator: number, current: DelegateDataPrice) => {
+    return accumulator + current.tokenHoldersRepresentedAmount
+  }, 0)
+}
+
+const LeaderBoardTitle = () => (
+  <Row>
+      <SmallNumber>🏆</SmallNumber>
+      <Address>📛</Address>
+      <VoteWeight>💪</VoteWeight>
+      <SmallNumber>👥</SmallNumber>
+      <SmallNumber>🏛️</SmallNumber> 
+      <SmallNumber>🗳️</SmallNumber> 
+    </Row>
+)
+
 const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
   const { id, value, handle, perProtocol } = data;
   return (
     <Row>
-      <div>{rank}</div>
+      <SmallNumber>{rank}</SmallNumber>
       <Address>{handle || id}</Address>
-      <div>{formatPrice(value)}</div>
-      <div>{Object.keys(perProtocol).length}</div> 
-      <div>{totalVotes(Object.values(perProtocol))}</div>
+      <VoteWeight>{formatPrice(value)}</VoteWeight>
+      <SmallNumber>{totalConstituents(Object.values(perProtocol))}</SmallNumber>
+      <SmallNumber>{Object.keys(perProtocol).length}</SmallNumber> 
+      <SmallNumber>{totalVotes(Object.values(perProtocol))}</SmallNumber>
     </Row>
   )
 }
 
+// Look into animations https://itnext.io/animating-list-reordering-with-react-hooks-aca5e7eeafba
 export default function Leaderboard() {
   const { activeProtocols } = useProtocols();
   const { setActiveLeaderboard, leaderboardRankings } = useLeaderboard();
@@ -68,6 +98,7 @@ export default function Leaderboard() {
   return (
     <LeaderBoardBox>
       <ScrollArea>
+        <LeaderBoardTitle />
         {leaderboardRankings.slice(0, 50).map((data: DelegateDataMulti, i: number) => (
           <LeaderboardRow key={data.id} rank={i + 1} data={data} />
         ))}

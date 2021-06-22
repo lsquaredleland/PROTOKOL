@@ -10,22 +10,22 @@ const SiteWrapper = styled.div`
   height: 100vh;
   width: 100%;
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 1.5em;
+  // grid-template-columns: auto 1fr;
+  // grid-gap: 1.5em;
   overflow: auto;
   @media (max-width: 1080px) {
     display: flex;
     flex-flow: column;
     align-items: flex-start;
     overflow-x: hidden;
-    grid-gap: 0;
+    // grid-gap: 0;
   }
 `
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
   border: 2px solid black; /* To remove */
   margin-top: 32px;

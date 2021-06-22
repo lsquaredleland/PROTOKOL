@@ -14,6 +14,7 @@ export interface DelegateData {
   autonomous: boolean | undefined
   handle: string | undefined // twitter handle
   imageURL?: string | undefined
+  tokenHoldersRepresentedAmount: number
 }
 
 export interface DelegateDataPrice extends DelegateData {
