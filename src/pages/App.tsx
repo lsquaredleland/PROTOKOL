@@ -49,8 +49,8 @@ const SmallMarginer = styled.div`
 const Blank = () => {
   return (
     <>
-      <h2>ProtoKOLs</h2>
-      <h3>Who are the governance KOLs?</h3>
+      <h2>PROTOKOLs</h2>
+      <h3>Who are the governance influences?</h3>
       <ProtocolSelector />
       <SmallMarginer />
       <Leaderboard />

@@ -11,3 +11,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Ideally would use Pump Demi, having issues installing though
+ * https://typesetinthefuture.com/2014/12/01/alien/
+ */
+@font-face {
+  font-family: 'Audiowide';
+  src: local('Audiowide'), url('assets/fonts/Audiowide-Regular.ttf') format('truetype');
+}
+
+/* design inspiration: Alien / Moon 
+ * EuroStyle Extended, Microstyle, Berthold City Light
+ * Browser has some issues w/ readig the fonts below
+*/
+
+@font-face {
+  font-family: 'Sevastopol Interface';
+  src: url('assets/fonts/Sevastopol-Interface.woff') format('woff');
+}
+
+
+h1, h2, h3 {
+  font-family: 'Audiowide';
+}

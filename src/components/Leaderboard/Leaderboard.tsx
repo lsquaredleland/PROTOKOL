@@ -3,27 +3,49 @@ import { useProtocols } from 'contexts/Protocols'
 import { useLeaderboard } from 'contexts/Leaderboard';
 import { DelegateDataMulti, DelegateDataPrice } from 'contexts/Leaderboard/types';
 import styled from 'styled-components';
-import { formatPrice } from 'utils/misc';
+import { isMobile } from 'react-device-detect';
+import { formatPrice, nFormatter } from 'utils/misc';
 import { useTwitterProfileData } from 'hooks/social';
+import emptyURL from 'assets/images/emptyprofile.png';
 
 
 const LeaderBoardBox = styled.div`
   width: 90%;
   overflow: hidden;
-  font-family: monospace;
+  font-family: Sevastopol Interface, monospace;
+  font-size: x-large;
+
+  overflow-x: scroll;
+  white-space: nowrap;
 
   // Compress margin when smaller device
   @media (max-width: 425px) {
     width: 95%
   }
+
+  // Hiding scroll bars
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const ScrollArea = styled.div`
-  width: 100%;
   height: 100%;
   overflow-y: scroll;
-  padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
   box-sizing: content-box; 
+  display: inline-block;
+  width: max(100%,500px);
+
+  // Hiding scroll bars
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const Row = styled.div`
@@ -47,25 +69,34 @@ const Header = styled(Row)`
 `
 
 const User = styled.div`
-  width: 35%;
-  min-width: 120px;
-  display: flex
+  width: max(25%,230px);
+  display: flex;
 `;
 
 const Address = styled.div`
   min-width: 80px;
   text-align: left;
   float:right;
-  margin-left: 10px
+  margin-left: 20px
 `;
 
 const VoteWeight = styled.div`
   width: 140px;
   direction: rtl;
+
+  // Compress margin when smaller device
+  @media (max-width: 425px) {
+    width: 50px;
+  }
 `
 
 const SmallNumber = styled.div`
   min-width: 30px;
+`
+
+const RankNumber = styled.div`
+  min-width: 20px;
+  text-align: left;
 `
 
 type LeaderboardRowProps = {
@@ -87,8 +118,8 @@ const totalConstituents = (perProtocol: DelegateDataPrice[]) : number => {
 
 const LeaderBoardTitle = () => (
   <Header>
-    <SmallNumber>🏆</SmallNumber>
-    <Address>📛</Address>
+    <RankNumber>🏆</RankNumber>
+    <User>📛</User>
     <VoteWeight>💪</VoteWeight>
     <SmallNumber>👥</SmallNumber>
     <SmallNumber>🏛️</SmallNumber> 
@@ -114,16 +145,22 @@ const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
   const handleOrAddress = handle ? `@${handle}` : formatAddress(id);
 
   const twitterData = useTwitterProfileData(handle);
-  const imageURL: string | undefined = twitterData?.profileURL
+  const imageURL: string | undefined = twitterData?.profileURL;
+
+  // For vote weight formatting => should isMobile be dynamic?
+  // could u/ a useWindowDimensions() hook...
 
   return (
     <Row>
-      <SmallNumber>{rank}</SmallNumber>
+      <RankNumber>{rank}</RankNumber>
       <User>
-        <Avatar src={imageURL} />
+        <Avatar
+          src={imageURL || emptyURL}
+          style={{opacity: imageURL ? '100%' : '20%'}}
+        />
         <Address>{handleOrAddress}</Address>
       </User>
-      <VoteWeight>{formatPrice(value)}</VoteWeight>
+      <VoteWeight>{isMobile ? nFormatter(value, 1) : formatPrice(value)}</VoteWeight>
       <SmallNumber>{totalConstituents(Object.values(perProtocol))}</SmallNumber>
       <SmallNumber>{Object.keys(perProtocol).length}</SmallNumber> 
       <SmallNumber>{totalVotes(Object.values(perProtocol))}</SmallNumber>
