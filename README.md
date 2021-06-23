@@ -24,3 +24,7 @@ Who are the crypto KOL's weighted by total asset value of votes?
 
 * Remember to re-integrate social features "allIdenties" in `fetchDelegatesFromClient`, etc...
 * Remember to update .env file -> don't reuse sybil's endpoint
+* How to fix TWITTER_WORKER_URL to work most of the time?
+
+
+* Did overuse Context -> lot of data could probably have just been a hook especially if it's only used in 1 place...

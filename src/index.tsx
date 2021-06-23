@@ -10,17 +10,20 @@ import getLibrary from './utils/getLibrary'
 import { ProtocolsProvider } from 'contexts/Protocols';
 import { LeaderboardProvider } from 'contexts/Leaderboard';
 import { PricesProvider } from 'contexts/Prices';
+import { SocialProvider } from 'contexts/Social';
 
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <PricesProvider>
-      <ProtocolsProvider>
-        <LeaderboardProvider>
-          {children}
-        </LeaderboardProvider>
-      </ProtocolsProvider>
-    </PricesProvider>
+    <SocialProvider>
+      <PricesProvider>
+        <ProtocolsProvider>
+          <LeaderboardProvider>
+            {children}
+          </LeaderboardProvider>
+        </ProtocolsProvider>
+      </PricesProvider>
+    </SocialProvider>
   );
 };
 

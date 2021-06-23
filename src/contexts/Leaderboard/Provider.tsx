@@ -1,5 +1,5 @@
 import { compoundClient, poolClient, radicleClient, uniswapClient } from "apollo/client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Context from "./Context";
 import { fetchTopDelegates } from "./fetch/fetchDelegates"
 import { useActiveWeb3React } from "hooks/connectivity"
@@ -9,12 +9,14 @@ import ApolloClient from "apollo-client";
 import { DelegateData, DelegateDataPrice, DelegateDataMulti } from './types'
 import { RADICLE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE} from "contexts/Protocols/data";
 import { useCallback } from "react";
-import { useRef } from "react";
-import { usePrices } from "contexts/Prices";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import difference from "lodash/difference";
 import { ProtocolPrices } from "contexts/Prices/types";
+
+// Warry
+import { usePrices } from "contexts/Prices";
+import { useSocial } from "contexts/Social"
 
 
 interface RawResponse {
@@ -102,10 +104,7 @@ const Provider: React.FC = ({ children }) => {
   }, [activeLeaderboard, currentPrices, dataLoaded])
 
   const { library } = useActiveWeb3React();
-
-  // https://github.com/Uniswap/sybil-interface/blob/master/src/state/social
-  // ^move this data into Contexts
-  // const [allIdentities] = useAllIdentities()
+  const { allIdentities } = useSocial();
 
   // Behaviour seems the same w/ or w/o useCallback?
   const fetchTopDelegateData = useCallback(
@@ -115,8 +114,9 @@ const Provider: React.FC = ({ children }) => {
     ) => {
       try {
         library &&
+        allIdentities &&
           client &&
-          fetchTopDelegates(client, library).then(async delegateData => {
+          fetchTopDelegates(client, library, allIdentities).then(async delegateData => {
             if (delegateData) {
               rawData.current[id] = delegateData
               setDataLoaded((prevDataLoaded) => prevDataLoaded.concat([id]))
@@ -126,7 +126,7 @@ const Provider: React.FC = ({ children }) => {
         console.log('ERROR:' + e)
       }
     },
-    [library, rawData]
+    [library, allIdentities, rawData]
   )
   
   useEffect(() => {

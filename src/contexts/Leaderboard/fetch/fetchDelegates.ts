@@ -5,6 +5,7 @@ import fetchProfileData from 'utils/fetchProfileData'
 import isAddress from 'utils/isAddress'
 import { DocumentNode } from 'graphql'
 import { AUTONOMOUS_PROPOSAL_BYTECODE } from 'constants/proposals'
+import { Identities } from "contexts/Social/types"
 
 
 // Source: https://github.com/Uniswap/sybil-interface/blob/master/src/data/governance.ts
@@ -25,7 +26,7 @@ interface DelegateResponse {
 async function fetchDelegatesFromClient(
   client: any,
   library: Web3Provider,
-  // allIdentities: Identities,
+  allIdentities: Identities,
   query: DelegateQuery
 ): Promise<DelegateData[] | null> {
   try {
@@ -41,8 +42,8 @@ async function fetchDelegatesFromClient(
         // for each handle - get twitter profile data ,
         const handles = await Promise.all(
           res.data.delegates.map(async (a: DelegateData) => {
-            // const checksummed = isAddress(a.id)
-            const handle = undefined; // checksummed ? allIdentities?.[checksummed]?.twitter?.handle : undefined
+            const checksummed = isAddress(a.id)
+            const handle = checksummed ? allIdentities?.[checksummed]?.twitter?.handle : undefined
 
             let profileData
             try {
@@ -90,8 +91,9 @@ async function fetchDelegatesFromClient(
 export async function fetchTopDelegates(
   client: any,
   library: Web3Provider,
+  allIdentities: Identities,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, {
+  return fetchDelegatesFromClient(client, library, allIdentities, {
     query: TOP_DELEGATES,
     fetchPolicy: 'cache-first'
   })
@@ -100,9 +102,10 @@ export async function fetchTopDelegates(
 export async function fetchTopDelegatesOffset(
   client: any,
   library: Web3Provider,
-  maxFetched: number
+  allIdentities: Identities,
+  maxFetched: number,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, {
+  return fetchDelegatesFromClient(client, library, allIdentities, {
     query: TOP_DELEGATES_OFFSET,
     variables: {
       skip: maxFetched

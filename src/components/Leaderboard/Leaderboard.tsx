@@ -4,6 +4,7 @@ import { useLeaderboard } from 'contexts/Leaderboard';
 import { DelegateDataMulti, DelegateDataPrice } from 'contexts/Leaderboard/types';
 import styled from 'styled-components';
 import { formatPrice } from 'utils/misc';
+import { useTwitterProfileData } from 'hooks/social';
 
 
 const LeaderBoardBox = styled.div`
@@ -45,13 +46,17 @@ const Header = styled(Row)`
   border-bottom: 2px solid black;
 `
 
-const Address = styled.div`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+const User = styled.div`
   width: 35%;
+  min-width: 120px;
+  display: flex
+`;
+
+const Address = styled.div`
   min-width: 80px;
   text-align: left;
+  float:right;
+  margin-left: 10px
 `;
 
 const VoteWeight = styled.div`
@@ -60,7 +65,7 @@ const VoteWeight = styled.div`
 `
 
 const SmallNumber = styled.div`
-  min-width: 20px;
+  min-width: 30px;
 `
 
 type LeaderboardRowProps = {
@@ -91,12 +96,33 @@ const LeaderBoardTitle = () => (
   </Header>
 )
 
+const Avatar = styled.img` // could extend Circle in ProtocolSelector
+  height: 40px;
+  width: 40px;
+  background-color: #bbb;
+  border-radius: 50%;
+  float: left;
+  margin: auto 0;
+`
+
+const formatAddress = (address: string) => {
+  return `${address.slice(0,6)}...${address.slice(-4)}`
+}
+
 const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
   const { id, value, handle, perProtocol } = data;
+  const handleOrAddress = handle ? `@${handle}` : formatAddress(id);
+
+  const twitterData = useTwitterProfileData(handle);
+  const imageURL: string | undefined = twitterData?.profileURL
+
   return (
     <Row>
       <SmallNumber>{rank}</SmallNumber>
-      <Address>{handle || id}</Address>
+      <User>
+        <Avatar src={imageURL} />
+        <Address>{handleOrAddress}</Address>
+      </User>
       <VoteWeight>{formatPrice(value)}</VoteWeight>
       <SmallNumber>{totalConstituents(Object.values(perProtocol))}</SmallNumber>
       <SmallNumber>{Object.keys(perProtocol).length}</SmallNumber> 
