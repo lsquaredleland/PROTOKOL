@@ -18,7 +18,7 @@ export function nFormatter(num: number, digits: number) {
     return num >= item.value;
   });
 
-  return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
+  return item ? "$" + (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
 }
 
 export function formatPrice(value: number): string {

@@ -6,11 +6,15 @@ import { DelegateDataMulti } from './types'
 interface LeaderboardContext {
   setActiveLeaderboard: (update: Array<GovernanceInfo>) => void;
   leaderboardRankings: DelegateDataMulti[];
+  loading: boolean;
+  error: string;
 }
 
 const Context = createContext<LeaderboardContext>({
   setActiveLeaderboard: (update: Array<GovernanceInfo>) => {},
-  leaderboardRankings: []
+  leaderboardRankings: [],
+  loading: true,
+  error: ""
 });
 
 export default Context;

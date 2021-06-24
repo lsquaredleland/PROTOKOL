@@ -83,11 +83,10 @@ const generateleaderboardRankings = function(
 const Provider: React.FC = ({ children }) => {
   const [activeLeaderboard, setActiveLeaderboard] = useState<Array<GovernanceInfo>>([]);
   const rawData = useRef<RawResponse>({})
-  // const leaderboardRankings = useRef<DelegateDataMulti[]>([])
-
   const [leaderboardRankings, setLeaderboardRankings] = useState<DelegateDataMulti[]>([]);
-
   const [dataLoaded, setDataLoaded] = useState<Array<String>>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
 
   const { currentPrices } = usePrices()
   // Question: calling a Context within another Context ok?
@@ -96,12 +95,15 @@ const Provider: React.FC = ({ children }) => {
   useEffect(() => {
     const diff = difference(activeLeaderboard.map(({id}: GovernanceInfo) => id), dataLoaded)
     if (diff.length > 0) {
+      setLoading(true);
       return // ensuring that all data is loaded prior to running
     }
 
     const data = generateleaderboardRankings(activeLeaderboard, rawData, currentPrices)
     setLeaderboardRankings(data)
-  }, [activeLeaderboard, currentPrices, dataLoaded])
+    setLoading(false)
+    setError('')
+  }, [activeLeaderboard, currentPrices, dataLoaded, setLoading, setError])
 
   const { library } = useActiveWeb3React();
   const { allIdentities } = useSocial();
@@ -116,7 +118,7 @@ const Provider: React.FC = ({ children }) => {
         library &&
         allIdentities &&
           client &&
-          fetchTopDelegates(client, library, allIdentities).then(async delegateData => {
+          fetchTopDelegates(client, library, allIdentities, setError).then(async delegateData => {
             if (delegateData) {
               rawData.current[id] = delegateData
               setDataLoaded((prevDataLoaded) => prevDataLoaded.concat([id]))
@@ -124,9 +126,10 @@ const Provider: React.FC = ({ children }) => {
           })
       } catch (e) {  
         console.log('ERROR:' + e)
+        setError('ERROR:' + e)
       }
     },
-    [library, allIdentities, rawData]
+    [library, allIdentities, rawData, setError]
   )
   
   useEffect(() => {
@@ -138,12 +141,13 @@ const Provider: React.FC = ({ children }) => {
     })
   }, [fetchTopDelegateData, activeLeaderboard, rawData])
   
-
   return (
     <Context.Provider
       value={{
         setActiveLeaderboard,
-        leaderboardRankings
+        leaderboardRankings,
+        loading,
+        error
       }}
     >
       {children}

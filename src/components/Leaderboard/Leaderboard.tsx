@@ -69,15 +69,22 @@ const Header = styled(Row)`
 `
 
 const User = styled.div`
-  width: max(25%,230px);
+  width: 10rem;
   display: flex;
+
+  // HACK
+  @media (max-width: 425px) {
+    width: 40%
+  }
 `;
 
-const Address = styled.div`
+const Address = styled.a`
   min-width: 80px;
   text-align: left;
   float:right;
-  margin-left: 20px
+  margin-left: 20px;
+  color: inherit;
+  text-decoration: inherit;
 `;
 
 const VoteWeight = styled.div`
@@ -98,11 +105,6 @@ const RankNumber = styled.div`
   min-width: 20px;
   text-align: left;
 `
-
-type LeaderboardRowProps = {
-  rank: number,
-  data: DelegateDataMulti,
-}
 
 const totalVotes = (perProtocol: DelegateDataPrice[]) : number => {
   return perProtocol.reduce((accumulator: number, current: DelegateDataPrice) => {
@@ -140,9 +142,16 @@ const formatAddress = (address: string) => {
   return `${address.slice(0,6)}...${address.slice(-4)}`
 }
 
-const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
+type LeaderboardRowProps = {
+  rank: number,
+  data: DelegateDataMulti,
+  visible: boolean,
+}
+
+const LeaderboardRow = ({ rank, data, visible }: LeaderboardRowProps) => {
   const { id, value, handle, perProtocol } = data;
   const handleOrAddress = handle ? `@${handle}` : formatAddress(id);
+  const link = handle ? `https://twitter.com/${handle}` : `https://etherescan.io/address/${id}`;
 
   const twitterData = useTwitterProfileData(handle);
   const imageURL: string | undefined = twitterData?.profileURL;
@@ -151,14 +160,17 @@ const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
   // could u/ a useWindowDimensions() hook...
 
   return (
-    <Row>
+    <Row style={{visibility: visible ? 'visible' : 'hidden'}}>
       <RankNumber>{rank}</RankNumber>
       <User>
         <Avatar
           src={imageURL || emptyURL}
           style={{opacity: imageURL ? '100%' : '20%'}}
         />
-        <Address>{handleOrAddress}</Address>
+        <Address
+          href={link}
+          target={'_blank'}
+        >{handleOrAddress}</Address>
       </User>
       <VoteWeight>{isMobile ? nFormatter(value, 1) : formatPrice(value)}</VoteWeight>
       <SmallNumber>{totalConstituents(Object.values(perProtocol))}</SmallNumber>
@@ -171,7 +183,7 @@ const LeaderboardRow = ({ rank, data }: LeaderboardRowProps) => {
 // Look into animations https://itnext.io/animating-list-reordering-with-react-hooks-aca5e7eeafba
 export default function Leaderboard() {
   const { activeProtocols } = useProtocols();
-  const { setActiveLeaderboard, leaderboardRankings } = useLeaderboard();
+  const { setActiveLeaderboard, leaderboardRankings, loading, error } = useLeaderboard();
 
   useEffect(() => {
     // Thoughts passing values to Context vs pulling data from context directly?
@@ -182,8 +194,15 @@ export default function Leaderboard() {
     <LeaderBoardBox>
       <ScrollArea>
         <LeaderBoardTitle />
+        {loading || error ? <div>loading...{error}</div> : null}
+        {!loading && leaderboardRankings.length === 0 ? <div>Please select a protocol above</div> : null}
         {leaderboardRankings.slice(0, 50).map((data: DelegateDataMulti, i: number) => (
-          <LeaderboardRow key={data.id} rank={i + 1} data={data} />
+          <LeaderboardRow
+            key={data.id}
+            rank={i + 1}
+            data={data}
+            visible={!loading}
+          />
         ))}
       </ScrollArea>
     </LeaderBoardBox>

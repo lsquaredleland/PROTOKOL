@@ -6,6 +6,7 @@ import isAddress from 'utils/isAddress'
 import { DocumentNode } from 'graphql'
 import { AUTONOMOUS_PROPOSAL_BYTECODE } from 'constants/proposals'
 import { Identities } from "contexts/Social/types"
+import { Dispatch, SetStateAction } from "react"
 
 
 // Source: https://github.com/Uniswap/sybil-interface/blob/master/src/data/governance.ts
@@ -27,7 +28,8 @@ async function fetchDelegatesFromClient(
   client: any,
   library: Web3Provider,
   allIdentities: Identities,
-  query: DelegateQuery
+  setError: Dispatch<SetStateAction<string>>,
+  query: DelegateQuery,
 ): Promise<DelegateData[] | null> {
   try {
     return client
@@ -81,10 +83,14 @@ async function fetchDelegatesFromClient(
         })
       })
       .catch((e: any) => {
-        return Promise.reject(`Error fetching delegates from subgraph: ${e.message}`)
+        const errorMsg = `Error fetching delegates from subgraph: ${e.message}`
+        setError(errorMsg)
+        return Promise.reject(errorMsg)
       })
   } catch (e) {
-    return Promise.reject('Unable to fetch delegates')
+    const errorMsg = 'Unable to fetch delegates'
+    setError(errorMsg)
+    return Promise.reject(errorMsg)
   }
 }
 
@@ -92,8 +98,9 @@ export async function fetchTopDelegates(
   client: any,
   library: Web3Provider,
   allIdentities: Identities,
+  setError: Dispatch<SetStateAction<string>>,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, allIdentities, {
+  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
     query: TOP_DELEGATES,
     fetchPolicy: 'cache-first'
   })
@@ -103,9 +110,10 @@ export async function fetchTopDelegatesOffset(
   client: any,
   library: Web3Provider,
   allIdentities: Identities,
+  setError: Dispatch<SetStateAction<string>>,
   maxFetched: number,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, allIdentities, {
+  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
     query: TOP_DELEGATES_OFFSET,
     variables: {
       skip: maxFetched

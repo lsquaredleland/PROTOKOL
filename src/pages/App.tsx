@@ -5,6 +5,7 @@ import ProposalDetails from './ProposalDetails'
 import ProtocolSelector from 'components/ProtocolSelector'
 import Leaderboard from 'components/Leaderboard'
 import Web3ReactManager from 'components/Web3ReactManager'
+import ErrorWindow from 'components/ErrorWindow'
 
 const SiteWrapper = styled.div`
   height: 100vh;
@@ -49,6 +50,7 @@ const SmallMarginer = styled.div`
 const Blank = () => {
   return (
     <>
+      <ErrorWindow />
       <h2>PROTOKOLs</h2>
       <h3>Who are the governance influences?</h3>
       <ProtocolSelector />

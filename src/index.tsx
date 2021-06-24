@@ -11,19 +11,22 @@ import { ProtocolsProvider } from 'contexts/Protocols';
 import { LeaderboardProvider } from 'contexts/Leaderboard';
 import { PricesProvider } from 'contexts/Prices';
 import { SocialProvider } from 'contexts/Social';
+import { NotificationProvider } from 'contexts/Notification';
 
 
 const Providers: React.FC = ({ children }) => {
   return (
-    <SocialProvider>
-      <PricesProvider>
-        <ProtocolsProvider>
-          <LeaderboardProvider>
-            {children}
-          </LeaderboardProvider>
-        </ProtocolsProvider>
-      </PricesProvider>
-    </SocialProvider>
+    <NotificationProvider>
+      <SocialProvider>
+        <PricesProvider>
+          <ProtocolsProvider>
+            <LeaderboardProvider>
+              {children}
+            </LeaderboardProvider>
+          </ProtocolsProvider>
+        </PricesProvider>
+      </SocialProvider>
+    </NotificationProvider>
   );
 };
 
