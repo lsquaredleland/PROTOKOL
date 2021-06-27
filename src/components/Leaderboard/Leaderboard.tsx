@@ -58,6 +58,7 @@ const Row = styled.div`
 const Header = styled(Row)`
   pointer-events: none;
   text-align: center;
+  z-index: 100;
 
   // All seems hacky
   position: sticky;

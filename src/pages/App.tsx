@@ -47,7 +47,7 @@ const SmallMarginer = styled.div`
   margin-top: 2.5rem;
 `
 
-const Blank = () => {
+const MainPage = () => {
   return (
     <>
       <ErrorWindow />
@@ -77,7 +77,7 @@ export default function App() {
               <Route exact strict path="/proposals/:protocolID" component={Proposals} /> */}
               <Route exact strict path="/proposals/:protocolID/:proposalID" component={ProposalDetails} />
               {/* <Route exact strict path="/delegates/:protocolID/:delegateAddress" component={DelegateInfo} /> */}
-              <Route path="/" component={Blank} />
+              <Route path="/" component={MainPage} />
             </Switch>
           </Web3ReactManager>
         </ContentWrapper>

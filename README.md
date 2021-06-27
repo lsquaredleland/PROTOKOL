@@ -20,6 +20,8 @@ You will also see any lint errors in the console.
 
 Who are the crypto KOL's weighted by total asset value of votes?
 
+Create individual profiles where users can look up specific addresses + integrate into the link.
+
 ## Footnotes
 
 * Remember to re-integrate social features "allIdenties" in `fetchDelegatesFromClient`, etc...

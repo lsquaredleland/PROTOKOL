@@ -9,9 +9,6 @@ import { Identities } from "contexts/Social/types"
 import { Dispatch, SetStateAction } from "react"
 
 
-// Source: https://github.com/Uniswap/sybil-interface/blob/master/src/data/governance.ts
-// Note: temporarily removing allIdentities -> twitter handle data
-// ^impliment in its context later
 interface DelegateQuery {
   query: DocumentNode
   variables?: { list?: false | string[] | undefined; skip?: number | undefined }
