@@ -51,7 +51,7 @@ const MainPage = () => {
   return (
     <>
       <ErrorWindow />
-      <h2>PROTOKOLs</h2>
+      <h2>PROTOKOL 100</h2>
       <h3>Who are the governance influences?</h3>
       <ProtocolSelector />
       <SmallMarginer />

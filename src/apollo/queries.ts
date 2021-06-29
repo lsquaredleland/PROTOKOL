@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 // import { FETCHING_INTERVAL } from '../state/governance/reducer'
 
-const FETCHING_INTERVAL = 50;
+const FETCHING_INTERVAL = 100;
 
 export const GLOBAL_DATA = gql`
   query governance {
