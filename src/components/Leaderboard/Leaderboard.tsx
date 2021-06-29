@@ -67,8 +67,8 @@ const LeaderBoardTitle = () => (
     <User>📛</User>
     <VoteWeight>💪</VoteWeight>
     <SmallNumber>👥</SmallNumber>
-    <SmallNumber>🏛️</SmallNumber> 
     <SmallNumber>🗳️</SmallNumber> 
+    <SmallNumber>🏛️</SmallNumber>
   </Header>
 )
 
@@ -88,7 +88,7 @@ export default function Leaderboard() {
         <LeaderBoardTitle />
         {loading || error ? <div>loading...{error}</div> : null}
         {!loading && leaderboardRankings.length === 0 ? <div>Please select a protocol above</div> : null}
-        {leaderboardRankings.slice(0, 50).map((data: DelegateDataMulti, i: number) => (
+        {leaderboardRankings.slice(0, 100).map((data: DelegateDataMulti, i: number) => (
           <LeaderboardRow
             key={data.id}
             rank={i + 1}

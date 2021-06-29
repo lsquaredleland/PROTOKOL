@@ -33,6 +33,6 @@ export const SmallNumber = styled.div`
 `
 
 export const RankNumber = styled.div`
-  min-width: 20px;
+  width: 20px;
   text-align: left;
 `

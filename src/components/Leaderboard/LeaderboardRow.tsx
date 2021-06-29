@@ -19,6 +19,12 @@ const User = styled.div`
   }
 `;
 
+const MainRow = styled(Row)`
+  :hover {
+    background-color: pink;
+  }
+`;
+
 const Address = styled.a`
   min-width: 80px;
   text-align: left;
@@ -36,6 +42,17 @@ const Avatar = styled.img` // could extend Circle in ProtocolSelector
   float: left;
   margin: auto 0;
 `
+
+const VoteWeightMod = styled(VoteWeight)`
+  text-align: right;
+  white-space: nowrap;
+  direction: revert;
+`;
+
+const ExpandedRowStyle = styled.div`
+  border: 1.5px solid black;
+  border-top: none;
+`;
 
 const totalVotes = (perProtocol: DelegateDataPrice[]) : number => {
   return perProtocol.reduce((accumulator: number, current: DelegateDataPrice) => {
@@ -61,25 +78,30 @@ type LeaderboardRowProps = {
 
 const ExpandedRow = ({ perProtocol }: { perProtocol: DelegateDataPrice[] }) => {
   return (
-    <div>
-      <div>protocol</div>
-      <div>Vote Weight (Votes)</div>
-      <div>Proposals Voted</div>
-      <div>Token holders represented</div>
+    <ExpandedRowStyle>
       {perProtocol.map((protocol: DelegateDataPrice, i: number) => {
         const { protocolId, value, delegatedVotes, votes, tokenHoldersRepresentedAmount } = protocol;
 
-        const symbol = CURRENT_SUPPORTED_PROTOCOLS.find((supported: GovernanceInfo) => supported.id === protocolId)?.token?.symbol
+        const protocolInfo = CURRENT_SUPPORTED_PROTOCOLS.find((supported: GovernanceInfo) => supported.id === protocolId)
+        const symbol = protocolInfo?.token?.symbol
         return (
-          <div key={i}>
-            <div>{protocolId}</div>
-            <div>{formatPrice(value)} ({Math.floor(delegatedVotes)} {symbol})</div>
-            <div>{votes.length}</div>
-            <div>{tokenHoldersRepresentedAmount}</div>
-          </div>
+          <Row key={i}>
+            <RankNumber></RankNumber>
+            <User>
+              <Avatar src={protocolInfo?.logo}/>
+            </User>
+            <VoteWeightMod>
+              <span style={{float:'right'}}>
+                {formatPrice(value)} ({Math.floor(delegatedVotes)} {symbol})
+              </span>
+            </VoteWeightMod>
+            <SmallNumber>{tokenHoldersRepresentedAmount}</SmallNumber>
+            <SmallNumber>{votes.length}</SmallNumber>
+            <SmallNumber />
+          </Row>
         )
       })}
-    </div>
+    </ExpandedRowStyle>
   )
 }
 
@@ -98,7 +120,7 @@ export function LeaderboardRow({ rank, data, visible }: LeaderboardRowProps) {
 
   return (
     <>
-      <Row
+      <MainRow
         style={{visibility: visible ? 'visible' : 'hidden'}}
         onClick={() => setExpanded(!expanded)}
       >
@@ -115,9 +137,9 @@ export function LeaderboardRow({ rank, data, visible }: LeaderboardRowProps) {
         </User>
         <VoteWeight>{isMobile ? nFormatter(value, 1) : formatPrice(value)}</VoteWeight>
         <SmallNumber>{totalConstituents(Object.values(perProtocol))}</SmallNumber>
-        <SmallNumber>{Object.keys(perProtocol).length}</SmallNumber> 
         <SmallNumber>{totalVotes(Object.values(perProtocol))}</SmallNumber>
-      </Row>
+        <SmallNumber>{Object.keys(perProtocol).length}</SmallNumber> 
+      </MainRow>
       {expanded ? 
         <ExpandedRow perProtocol={Object.values(perProtocol)} />
       : null}
