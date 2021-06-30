@@ -7,6 +7,7 @@ import Leaderboard from 'components/Leaderboard'
 import Web3ReactManager from 'components/Web3ReactManager'
 import ErrorWindow from 'components/ErrorWindow'
 
+
 const SiteWrapper = styled.div`
   height: 100vh;
   width: 100%;

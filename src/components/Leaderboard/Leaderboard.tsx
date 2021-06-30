@@ -8,6 +8,7 @@ import { LeaderboardRow } from './LeaderboardRow';
 import { RankNumber, User, VoteWeight, SmallNumber, Row } from './styles';
 
 
+
 const LeaderBoardBox = styled.div`
   width: 90%;
   overflow: hidden;
@@ -61,14 +62,15 @@ const Header = styled(Row)`
   border-bottom: 2px solid black;
 `
 
+// TODO: impliment tooltips
 const LeaderBoardTitle = () => (
   <Header>
     <RankNumber>🏆</RankNumber>
     <User>📛</User>
-    <VoteWeight>💪</VoteWeight>
-    <SmallNumber>👥</SmallNumber>
-    <SmallNumber>🗳️</SmallNumber> 
-    <SmallNumber>🏛️</SmallNumber>
+    <VoteWeight title="Vote weight -> Σ votes delegated * token value">💪</VoteWeight>
+    <SmallNumber title="Total number of delegates">👥</SmallNumber>
+    <SmallNumber title="Total number of votes">🗳️</SmallNumber> 
+    <SmallNumber title="Total number of protocols active in">🏛️</SmallNumber>
   </Header>
 )
 

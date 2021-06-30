@@ -54,6 +54,10 @@ const ExpandedRowStyle = styled.div`
   border-top: none;
 `;
 
+const Weak = styled.span`
+  opacity: 50%;
+`;
+
 const totalVotes = (perProtocol: DelegateDataPrice[]) : number => {
   return perProtocol.reduce((accumulator: number, current: DelegateDataPrice) => {
     return accumulator + current.votes.length
@@ -92,7 +96,7 @@ const ExpandedRow = ({ perProtocol }: { perProtocol: DelegateDataPrice[] }) => {
             </User>
             <VoteWeightMod>
               <span style={{float:'right'}}>
-                {formatPrice(value)} ({Math.floor(delegatedVotes)} {symbol})
+                {formatPrice(value)} <Weak>({nFormatter(delegatedVotes, 0, "")} {symbol})</Weak>
               </span>
             </VoteWeightMod>
             <SmallNumber>{tokenHoldersRepresentedAmount}</SmallNumber>
@@ -108,7 +112,7 @@ const ExpandedRow = ({ perProtocol }: { perProtocol: DelegateDataPrice[] }) => {
 export function LeaderboardRow({ rank, data, visible }: LeaderboardRowProps) {
   const { id, value, handle, perProtocol } = data;
   const handleOrAddress = handle ? `@${handle}` : formatAddress(id);
-  const link = handle ? `https://twitter.com/${handle}` : `https://etherescan.io/address/${id}`;
+  const link = handle ? `https://twitter.com/${handle}` : `https://etherscan.io/address/${id}`;
 
   const twitterData = useTwitterProfileData(handle);
   const imageURL: string | undefined = twitterData?.profileURL;

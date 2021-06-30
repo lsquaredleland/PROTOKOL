@@ -5,7 +5,8 @@ var formatter = new Intl.NumberFormat('en-US', {
 });
 
 const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-export function nFormatter(num: number, digits: number) {
+
+export function nFormatter(num: number, digits = 0, prefix = "$") {
   const lookup = [
     { value: 1, symbol: "" },
     { value: 1e3, symbol: "k" },
@@ -18,7 +19,7 @@ export function nFormatter(num: number, digits: number) {
     return num >= item.value;
   });
 
-  return item ? "$" + (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
+  return item ? prefix + (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
 }
 
 export function formatPrice(value: number): string {
