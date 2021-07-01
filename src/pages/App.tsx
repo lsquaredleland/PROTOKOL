@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import ProposalDetails from './ProposalDetails'
@@ -6,6 +6,8 @@ import ProtocolSelector from 'components/ProtocolSelector'
 import Leaderboard from 'components/Leaderboard'
 import Web3ReactManager from 'components/Web3ReactManager'
 import ErrorWindow from 'components/ErrorWindow'
+import InformationCard from 'components/InformationCard'
+import { ExpandAlt } from '@styled-icons/boxicons-regular/ExpandAlt'
 
 
 const SiteWrapper = styled.div`
@@ -40,7 +42,7 @@ const ContentWrapper = styled.div`
     padding: 2rem 0 0 0;
   `};
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 1rem 0 0 0;
+    padding: 0 0 0 0;
   `};
 `
 
@@ -61,12 +63,44 @@ const MainPage = () => {
   )
 }
 
+// HACK: Keep or discard this type of nav?
+const Max = styled(ExpandAlt)`
+  height: 15px;
+  padding-left: 10px;
+`;
+
+const NavBarStyle = styled.div`
+  line-height: 30px;
+  width: 100%
+`;
+
+const InfoTab = styled.div`
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  padding: 0 10px;
+  float: right
+`
+
+const NavBar = ({ setModalActive } : {setModalActive: (activeModal: boolean) => void}) => {
+  return (
+    <NavBarStyle>
+      <InfoTab>
+        Info / Legend<Max onClick={() => setModalActive(true)}/>
+      </InfoTab>
+    </NavBarStyle>
+  )
+}
+
 export default function App() {
+  const [modalActive, setModalActive] = useState<boolean>(true);
+
   return (
     <Suspense fallback={null}>
       <SiteWrapper>
         {/* <SideMenu /> */}
+        <InformationCard active={modalActive} setActive={setModalActive} />
         <ContentWrapper>
+          <NavBar setModalActive={setModalActive} />
           {/* <Web3Status />
           <Popups />
           <Polling />
@@ -74,10 +108,7 @@ export default function App() {
           <TopLevelModals /> */}
           <Web3ReactManager>
             <Switch>
-              {/* <Route exact strict path="/delegates/:protocolID" component={Delegates} />
-              <Route exact strict path="/proposals/:protocolID" component={Proposals} /> */}
               <Route exact strict path="/proposals/:protocolID/:proposalID" component={ProposalDetails} />
-              {/* <Route exact strict path="/delegates/:protocolID/:delegateAddress" component={DelegateInfo} /> */}
               <Route path="/" component={MainPage} />
             </Switch>
           </Web3ReactManager>

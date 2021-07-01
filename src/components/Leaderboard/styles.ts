@@ -21,6 +21,7 @@ export const User = styled.div`
 export const VoteWeight = styled.div`
   width: 140px;
   direction: rtl;
+  text-transform: full-width; // Only works in Firefox
 
   // Compress margin when smaller device
   @media (max-width: 425px) {

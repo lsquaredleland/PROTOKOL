@@ -22,6 +22,9 @@ Who are the crypto KOL's weighted by total asset value of votes?
 
 Create individual profiles where users can look up specific addresses + integrate into the link.
 
+* Put a legend / disclaimer as a modal on load -> move it to the side when close it (desktop only)
+* add protocol overviews on the side (1 card per protocol)
+
 ## Footnotes
 
 * Remember to re-integrate social features "allIdenties" in `fetchDelegatesFromClient`, etc...
