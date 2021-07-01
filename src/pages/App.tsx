@@ -7,7 +7,8 @@ import Leaderboard from 'components/Leaderboard'
 import Web3ReactManager from 'components/Web3ReactManager'
 import ErrorWindow from 'components/ErrorWindow'
 import InformationCard from 'components/InformationCard'
-import { ExpandAlt } from '@styled-icons/boxicons-regular/ExpandAlt'
+import Footer from 'pages/Footer'
+import NavBar from 'pages/NavBar'
 
 
 const SiteWrapper = styled.div`
@@ -63,34 +64,6 @@ const MainPage = () => {
   )
 }
 
-// HACK: Keep or discard this type of nav?
-const Max = styled(ExpandAlt)`
-  height: 15px;
-  padding-left: 10px;
-`;
-
-const NavBarStyle = styled.div`
-  line-height: 30px;
-  width: 100%
-`;
-
-const InfoTab = styled.div`
-  border-left: 2px solid black;
-  border-bottom: 2px solid black;
-  padding: 0 10px;
-  float: right
-`
-
-const NavBar = ({ setModalActive } : {setModalActive: (activeModal: boolean) => void}) => {
-  return (
-    <NavBarStyle>
-      <InfoTab>
-        Info / Legend<Max onClick={() => setModalActive(true)}/>
-      </InfoTab>
-    </NavBarStyle>
-  )
-}
-
 export default function App() {
   const [modalActive, setModalActive] = useState<boolean>(true);
 
@@ -113,7 +86,8 @@ export default function App() {
             </Switch>
           </Web3ReactManager>
         </ContentWrapper>
-        <SmallMarginer />
+        {/* <SmallMarginer /> */}
+        <Footer />
       </SiteWrapper>
     </Suspense>
   )

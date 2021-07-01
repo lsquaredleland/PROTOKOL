@@ -58,6 +58,7 @@ const AlertText: React.FC = () => (
     <h1>ALERT</h1>
     <p><strong>Definition:</strong> "PROTOKOL" is a portmanteau of protocol and KOL (key opinion leader), the latter term is interchangeable with influencer. </p>
     <p>Here we wanted to see who are the crypto KOLs in governance, who has the most influence. We use a simple metric of summing the total tokens delegated per delegate multiplied by the market price of the tokens. Although ultimately this number itself is meaningless.</p>
+    <p>Are you in the PROTOKOL 100?</p>
   </>
 )
 
