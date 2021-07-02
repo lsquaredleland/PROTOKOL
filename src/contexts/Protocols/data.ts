@@ -5,6 +5,13 @@ import AaveLogo from 'assets/images/aave-logo.png'
 import PoolLogo from 'assets/images/pooltogether-icon.png'
 import RadicleLogo from 'assets/images/radicle-logo.svg'
 import { SerializedToken, GovernanceInfo } from './types'
+import {
+  radicleClient,
+  poolClient,
+  uniswapClient,
+  aaveClient,
+  compoundClient,
+} from 'apollo/client'
 
 
 // From https://github.com/Uniswap/sybil-interface/blob/master/src/state/governance/reducer.ts
@@ -108,4 +115,12 @@ export const SUPPORTED_PROTOCOLS: { [id: string]: GovernanceInfo } = {
   radicle: RADICLE_GOVERNANCE
 }
 
-export const CURRENT_SUPPORTED_PROTOCOLS = [UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, RADICLE_GOVERNANCE];
+export const CURRENT_SUPPORTED_PROTOCOLS = [UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE, AAVE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, RADICLE_GOVERNANCE, ];
+
+export const clientMapping = {
+  [RADICLE_GOVERNANCE.id]: radicleClient,
+  [POOL_TOGETHER_GOVERNANCE.id]: poolClient,
+  [UNISWAP_GOVERNANCE.id]: uniswapClient,
+  [AAVE_GOVERNANCE.id]: aaveClient,
+  [COMPOUND_GOVERNANCE.id]: compoundClient,
+}

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Context from "./Context";
-import { COMPOUND_GOVERNANCE, UNISWAP_GOVERNANCE, CURRENT_SUPPORTED_PROTOCOLS } from "./data";
+import { COMPOUND_GOVERNANCE, UNISWAP_GOVERNANCE, AAVE_GOVERNANCE, CURRENT_SUPPORTED_PROTOCOLS } from "./data";
 import { GovernanceInfo } from "./types";
 
 
 const Provider: React.FC = ({ children }) => {
   // Question: should below be an object or array is sufficient?
   const [activeProtocols, setActiveProtocols] = useState<Array<GovernanceInfo>>(
-    [COMPOUND_GOVERNANCE, UNISWAP_GOVERNANCE]
+    [COMPOUND_GOVERNANCE, UNISWAP_GOVERNANCE, AAVE_GOVERNANCE]
   );
 
   const allProtocols = CURRENT_SUPPORTED_PROTOCOLS

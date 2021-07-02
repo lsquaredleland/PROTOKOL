@@ -1,4 +1,3 @@
-import { compoundClient, poolClient, radicleClient, uniswapClient } from "apollo/client";
 import React, { useState, useEffect, useRef } from "react";
 import Context from "./Context";
 import { fetchTopDelegates, fetchSearchedDelegate } from "./fetch/fetchDelegates"
@@ -7,7 +6,7 @@ import { GovernanceInfo } from "contexts/Protocols/types";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
 import { DelegateData, DelegateDataPrice, DelegateDataMulti } from './types'
-import { RADICLE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE} from "contexts/Protocols/data";
+import { clientMapping } from "contexts/Protocols/data";
 import { useCallback } from "react";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
@@ -21,13 +20,6 @@ import { useSocial } from "contexts/Social"
 
 interface RawResponse {
   [id: string]: DelegateData[];
-}
-
-const clients = {
-  [RADICLE_GOVERNANCE.id]: radicleClient,
-  [POOL_TOGETHER_GOVERNANCE.id]: poolClient,
-  [UNISWAP_GOVERNANCE.id]: uniswapClient,
-  [COMPOUND_GOVERNANCE.id]: compoundClient,
 }
 
 const generateleaderboardRankings = function(
@@ -175,13 +167,13 @@ const Provider: React.FC = ({ children }) => {
     const keys = Object.keys(rawData.current)
     activeLeaderboard.forEach(({ id }: GovernanceInfo) => {
       if (keys.indexOf(id) === -1) {
-        fetchTopDelegateData(clients[id], id)
+        fetchTopDelegateData(clientMapping[id], id)
       }
       
       // SEARCH
       if (searchAddress !== "") {
         console.log('call', searchAddress)
-        fetchSearchedDelegateData(clients[id], id)
+        fetchSearchedDelegateData(clientMapping[id], id)
       } else {
         setSearchRankings([])
       }
