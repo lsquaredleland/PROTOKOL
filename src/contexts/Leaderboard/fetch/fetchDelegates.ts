@@ -1,4 +1,4 @@
-import { TOP_DELEGATES, TOP_DELEGATES_OFFSET } from "apollo/queries"
+import { TOP_DELEGATES, TOP_DELEGATES_OFFSET, DELEGATES_FROM_LIST } from "apollo/queries"
 import { Web3Provider } from '@ethersproject/providers'
 import { DelegateData } from '../types'
 import fetchProfileData from 'utils/fetchProfileData'
@@ -114,6 +114,22 @@ export async function fetchTopDelegatesOffset(
     query: TOP_DELEGATES_OFFSET,
     variables: {
       skip: maxFetched
+    },
+    fetchPolicy: 'cache-first'
+  })
+}
+
+export async function fetchSearchedDelegate(
+  client: any,
+  library: Web3Provider,
+  allIdentities: Identities,
+  setError: Dispatch<SetStateAction<string>>,
+  searchedAddress: string[]
+): Promise<DelegateData[] | null> {
+  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
+    query: DELEGATES_FROM_LIST,
+    variables: {
+      list: searchedAddress
     },
     fetchPolicy: 'cache-first'
   })

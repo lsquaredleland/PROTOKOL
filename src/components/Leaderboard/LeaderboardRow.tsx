@@ -81,6 +81,7 @@ type LeaderboardRowProps = {
 }
 
 const ExpandedRow = ({ perProtocol }: { perProtocol: DelegateDataPrice[] }) => {
+  // TODO: sort `perProtocol` by value desc
   return (
     <ExpandedRowStyle>
       {perProtocol.map((protocol: DelegateDataPrice, i: number) => {

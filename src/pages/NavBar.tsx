@@ -23,13 +23,17 @@ const InfoTab = styled.div`
 
 interface NarBarProps {
   setModalActive: (activeModal: boolean) => void;
+  setSearchActive: (activeModal: boolean) => void;
 }
 
-export default function NavBar({ setModalActive } : NarBarProps) {
+export default function NavBar({ setModalActive, setSearchActive } : NarBarProps) {
   return (
     <NavBarStyle>
       <InfoTab>
         Info / Legend<Max onClick={() => setModalActive(true)}/>
+      </InfoTab>
+      <InfoTab onClick={() => setSearchActive(true)}>
+        space + p = search
       </InfoTab>
     </NavBarStyle>
   )

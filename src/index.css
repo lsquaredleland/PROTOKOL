@@ -35,6 +35,6 @@ h1, h2, h3 {
   font-family: 'Audiowide';
 }
 
-p, li, div {
+p, li, div, * {
   font-family: 'Sevastopol Interface';
 }

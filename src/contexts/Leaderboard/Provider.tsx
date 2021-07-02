@@ -1,7 +1,7 @@
 import { compoundClient, poolClient, radicleClient, uniswapClient } from "apollo/client";
 import React, { useState, useEffect, useRef } from "react";
 import Context from "./Context";
-import { fetchTopDelegates } from "./fetch/fetchDelegates"
+import { fetchTopDelegates, fetchSearchedDelegate } from "./fetch/fetchDelegates"
 import { useActiveWeb3React } from "hooks/connectivity"
 import { GovernanceInfo } from "contexts/Protocols/types";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
@@ -88,6 +88,12 @@ const Provider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
+  // For search address data (replicating entire leaderboard for ranking reasons...)
+  const rawSearchData = useRef<RawResponse>({}) // SEARCH
+  const [searchRankings, setSearchRankings] = useState<DelegateDataMulti[]>([]); // SEARCH
+  const [searchAddress, setSearchAddress] = useState<string>(''); // SEARCH
+  const [searchDataLoaded, setSearchDataLoaded] = useState<Array<String>>([]); // SEARCH
+
   const { currentPrices } = usePrices()
   // Question: calling a Context within another Context ok?
   // ^b/c active protocols are being passed in rather than grabbed like usePrices() here...
@@ -99,11 +105,20 @@ const Provider: React.FC = ({ children }) => {
       return // ensuring that all data is loaded prior to running
     }
 
-    const data = generateleaderboardRankings(activeLeaderboard, rawData, currentPrices)
-    setLeaderboardRankings(data)
+    setLeaderboardRankings(generateleaderboardRankings(activeLeaderboard, rawData, currentPrices))
     setLoading(false)
     setError('')
   }, [activeLeaderboard, currentPrices, dataLoaded, setLoading, setError])
+
+  // Search (little hacky)
+  useEffect(() => {
+    const diff = difference(activeLeaderboard.map(({id}: GovernanceInfo) => id), searchDataLoaded)
+    if (diff.length > 0) {
+      return // ensuring that all data is loaded prior to running
+    }
+    
+    setSearchRankings(generateleaderboardRankings(activeLeaderboard, rawSearchData, currentPrices))
+  }, [activeLeaderboard, currentPrices, searchDataLoaded, searchAddress])
 
   const { library } = useActiveWeb3React();
   const { allIdentities } = useSocial();
@@ -131,6 +146,30 @@ const Provider: React.FC = ({ children }) => {
     },
     [library, allIdentities, rawData, setError]
   )
+
+  // SEARCH
+  const fetchSearchedDelegateData = useCallback(
+    async (
+      client: ApolloClient<NormalizedCacheObject>,
+      id: string
+    ) => {
+      console.log([searchAddress])
+      try {
+        library &&
+        allIdentities &&
+          client &&
+          fetchSearchedDelegate(client, library, allIdentities, setError, [searchAddress.toLowerCase()]).then(async delegateData => {
+            if (delegateData) {
+              rawSearchData.current[id] = delegateData
+              setSearchDataLoaded((prev) => prev.concat([id]))
+            }
+          })
+      } catch (e) {  
+        console.log('ERROR:' + e)
+      }
+    },
+    [library, allIdentities, searchAddress, setError]
+  )
   
   useEffect(() => {
     const keys = Object.keys(rawData.current)
@@ -138,14 +177,24 @@ const Provider: React.FC = ({ children }) => {
       if (keys.indexOf(id) === -1) {
         fetchTopDelegateData(clients[id], id)
       }
+      
+      // SEARCH
+      if (searchAddress !== "") {
+        console.log('call', searchAddress)
+        fetchSearchedDelegateData(clients[id], id)
+      } else {
+        setSearchRankings([])
+      }
     })
-  }, [fetchTopDelegateData, activeLeaderboard, rawData])
+  }, [fetchTopDelegateData, fetchSearchedDelegateData, activeLeaderboard, rawData, searchAddress])
   
   return (
     <Context.Provider
       value={{
         setActiveLeaderboard,
+        setSearchAddress,
         leaderboardRankings,
+        searchRankings,
         loading,
         error
       }}

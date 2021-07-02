@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import ProposalDetails from './ProposalDetails'
@@ -7,8 +7,10 @@ import Leaderboard from 'components/Leaderboard'
 import Web3ReactManager from 'components/Web3ReactManager'
 import ErrorWindow from 'components/ErrorWindow'
 import InformationCard from 'components/InformationCard'
+import SearchModal from 'components/SearchModal'
 import Footer from 'pages/Footer'
 import NavBar from 'pages/NavBar'
+import useMultiKeyPress from 'hooks/useMultiKeyPress'
 
 
 const SiteWrapper = styled.div`
@@ -39,12 +41,12 @@ const ContentWrapper = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 2rem 0 0 0;
-  `};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0 0 0 0;
-  `};
+  // ${({ theme }) => theme.mediaWidth.upToMedium`
+  //   padding: 2rem 0 0 0;
+  // `};
+  // ${({ theme }) => theme.mediaWidth.upToSmall`
+  //   padding: 1rem 0 0 0;
+  // `};
 `
 
 const SmallMarginer = styled.div`
@@ -67,13 +69,24 @@ const MainPage = () => {
 export default function App() {
   const [modalActive, setModalActive] = useState<boolean>(true);
 
+  // Search Modal
+  const [searchActive, setSearchActive] = useState<boolean>(false);
+  const searchInitiated = useMultiKeyPress([' ', 'p']);
+
+  useEffect(() => {
+    if (searchInitiated) {
+      setSearchActive(s => !s);
+    }
+  }, [searchInitiated])
+
   return (
     <Suspense fallback={null}>
       <SiteWrapper>
         {/* <SideMenu /> */}
         <InformationCard active={modalActive} setActive={setModalActive} />
+        <SearchModal active={searchActive} deactivate={() => setSearchActive(false)} />
         <ContentWrapper>
-          <NavBar setModalActive={setModalActive} />
+          <NavBar setModalActive={setModalActive} setSearchActive={setSearchActive} />
           {/* <Web3Status />
           <Popups />
           <Polling />
