@@ -8,6 +8,7 @@ interface LeaderboardContext {
   setSearchAddress: (update: string) => void;
   leaderboardRankings: DelegateDataMulti[];
   searchRankings: DelegateDataMulti[];
+  searchAddress: string,
   loading: boolean;
   error: string;
 }
@@ -17,6 +18,7 @@ const Context = createContext<LeaderboardContext>({
   setSearchAddress: (update: string) => {},
   leaderboardRankings: [],
   searchRankings: [],
+  searchAddress: '',
   loading: true,
   error: ""
 });

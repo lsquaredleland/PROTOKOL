@@ -193,6 +193,7 @@ const Provider: React.FC = ({ children }) => {
       value={{
         setActiveLeaderboard,
         setSearchAddress,
+        searchAddress,
         leaderboardRankings,
         searchRankings,
         loading,

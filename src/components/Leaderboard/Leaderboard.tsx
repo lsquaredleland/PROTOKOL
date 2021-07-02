@@ -93,6 +93,10 @@ const LeaderboardItems = () => {
 
 const SearchResultItem = () => {
   const { leaderboardRankings, searchRankings } = useLeaderboard();
+  
+  if (searchRankings.length === 0) {
+    return <h3 style={{fontSize: 'medium'}}>Not a delegate</h3>
+  }
 
   const rank = leaderboardRankings.slice(0).reduce((accumulator: number, current: DelegateDataMulti, i: number, arr: DelegateDataMulti[]) => {
     if (searchRankings[0].id === current.id) {
@@ -120,7 +124,7 @@ const SearchResultItem = () => {
 // Look into animations https://itnext.io/animating-list-reordering-with-react-hooks-aca5e7eeafba
 export default function Leaderboard() {
   const { activeProtocols } = useProtocols();
-  const { setActiveLeaderboard, leaderboardRankings, loading, error, searchRankings } = useLeaderboard();
+  const { setActiveLeaderboard, leaderboardRankings, loading, error, searchRankings, searchAddress } = useLeaderboard();
 
   const areSearchResults = searchRankings.length > 0;
 
@@ -135,7 +139,7 @@ export default function Leaderboard() {
         <LeaderBoardTitle />
         {loading || error ? <div>loading...{error}</div> : null}
         {!loading && leaderboardRankings.length === 0 ? <div>Please select a protocol above</div> : null}
-        {areSearchResults ? 
+        {areSearchResults || searchAddress? 
           <SearchResultItem />
           : <LeaderboardItems />
         }
