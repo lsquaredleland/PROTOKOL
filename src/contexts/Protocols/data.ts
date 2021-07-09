@@ -4,6 +4,7 @@ import CompLogo from 'assets/images/compLogo.png'
 import AaveLogo from 'assets/images/aave-logo.png'
 import PoolLogo from 'assets/images/pooltogether-icon.png'
 import RadicleLogo from 'assets/images/radicle-logo.svg'
+import FeiLogo from 'assets/images/fei-logo.png'
 import { SerializedToken, GovernanceInfo } from './types'
 import {
   radicleClient,
@@ -11,6 +12,7 @@ import {
   uniswapClient,
   aaveClient,
   compoundClient,
+  feiClient,
 } from 'apollo/client'
 
 
@@ -106,16 +108,40 @@ export const RADICLE_GOVERNANCE: GovernanceInfo = {
   emoji: '🌱'
 }
 
+export const FEI_GOVERNANCE_ADDRESS = '0xE087F94c3081e1832dC7a22B48c6f2b5fAaE579B'
+export const TRIBE_ADDRESS = '0xc7283b66eb1eb5fb86327f08e1b5816b0720212b'
+const FEI = new Token(ChainId.MAINNET, TRIBE_ADDRESS, 18, 'TRIBE', 'Tribe')
+
+export const FEI_GOVERNANCE: GovernanceInfo = {
+  id: 'fei',
+  name: 'Fei Governance',
+  logo: FeiLogo,
+  primaryColor: '#5555FF',
+  secondaryColor: '#E3E3FF',
+  token: serializeToken(FEI),
+  governanceAddress: FEI_GOVERNANCE_ADDRESS,
+  social: '@feiprotocol',
+  emoji: '🌱'
+}
+
 // mapping for routing
 export const SUPPORTED_PROTOCOLS: { [id: string]: GovernanceInfo } = {
   uniswap: UNISWAP_GOVERNANCE,
   compound: COMPOUND_GOVERNANCE,
   aave: AAVE_GOVERNANCE,
   pool: POOL_TOGETHER_GOVERNANCE,
-  radicle: RADICLE_GOVERNANCE
+  radicle: RADICLE_GOVERNANCE,
+  fei: FEI_GOVERNANCE
 }
 
-export const CURRENT_SUPPORTED_PROTOCOLS = [UNISWAP_GOVERNANCE, COMPOUND_GOVERNANCE, AAVE_GOVERNANCE, POOL_TOGETHER_GOVERNANCE, RADICLE_GOVERNANCE, ];
+export const CURRENT_SUPPORTED_PROTOCOLS = [
+  UNISWAP_GOVERNANCE,
+  COMPOUND_GOVERNANCE,
+  AAVE_GOVERNANCE,
+  POOL_TOGETHER_GOVERNANCE,
+  RADICLE_GOVERNANCE,
+  FEI_GOVERNANCE
+];
 
 export const clientMapping = {
   [RADICLE_GOVERNANCE.id]: radicleClient,
@@ -123,4 +149,5 @@ export const clientMapping = {
   [UNISWAP_GOVERNANCE.id]: uniswapClient,
   [AAVE_GOVERNANCE.id]: aaveClient,
   [COMPOUND_GOVERNANCE.id]: compoundClient,
+  [FEI_GOVERNANCE.id]: feiClient,
 }

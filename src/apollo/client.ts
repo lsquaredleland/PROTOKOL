@@ -36,3 +36,10 @@ export const radicleClient = new ApolloClient({
   }),
   cache: new InMemoryCache()
 })
+
+export const feiClient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/timg512372/fei-protocol-subgraph'
+  }),
+  cache: new InMemoryCache()
+})
