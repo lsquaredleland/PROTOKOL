@@ -1,22 +1,4 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-----------
-
-# PROTOKOL (governance influences)
+# PROTOKOL (governance influencers)
 
 Definition: "PROTOKOL" is a portmanteau of protocol and KOL (key opinion leader), the latter term is interchangeable with influencer.
 Here we wanted to see who are the crypto KOLs in governance, i.e., who has the most influence. This can be measured in many ways: vote weight, successful proposals, the total number of forum posts, etc. Ultimately we went with total votes delegated * token price, which at best shows who has the most aggregate vote weight and at worse is utterly meaningless.
