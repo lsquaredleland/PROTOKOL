@@ -2,14 +2,23 @@ import { GovernanceInfo } from 'contexts/Protocols/types';
 import styled from 'styled-components'
 import { useProtocols } from 'contexts/Protocols'
 
-const Circle = styled.img`
+interface CircleProps {
+  active: Boolean;
+}
+
+const Circle = styled.img<CircleProps>`
   height: 50px;
   width: 50px;
   background-color: #bbb;
   border-radius: 50%;
-  width: 50%;
   margin: 0 auto;
   display: grid;
+  opacity: ${p => p.active ? '100%' : '50%'};
+  border: ${p => p.active ? '2px solid orange' : 'none'};
+
+  &:hover {
+    border: 2px solid orange
+  }
 `
 
 const ProtocolRow = styled.div`
@@ -17,7 +26,11 @@ const ProtocolRow = styled.div`
 `
 
 const ProtocolIconWrapper = styled.div`
-  width: 100px;
+  width: 80px;
+
+  @media (max-width: 425px) {
+    width: 55px;
+  }
 `;
 
 type ProtocolIconProps = {
@@ -31,7 +44,7 @@ const ProtocolIcon = ({ protocol, isActive, onClick }: ProtocolIconProps) => (
     <Circle
       src={protocol.logo}
       alt={protocol.name}
-      style={{border: isActive ? '2px solid orange' : 'none'}}
+      active={isActive}
       onClick={() => onClick(protocol, isActive)}
     />
   </ProtocolIconWrapper>

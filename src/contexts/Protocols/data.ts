@@ -5,6 +5,7 @@ import AaveLogo from 'assets/images/aave-logo.png'
 import PoolLogo from 'assets/images/pooltogether-icon.png'
 import RadicleLogo from 'assets/images/radicle-logo.svg'
 import FeiLogo from 'assets/images/fei-logo.png'
+import GitcoinLogo from 'assets/images/gitcoin-logo.png'
 import { SerializedToken, GovernanceInfo } from './types'
 import {
   radicleClient,
@@ -13,6 +14,7 @@ import {
   aaveClient,
   compoundClient,
   feiClient,
+  gitcoinClient
 } from 'apollo/client'
 
 
@@ -116,11 +118,27 @@ export const FEI_GOVERNANCE: GovernanceInfo = {
   id: 'fei',
   name: 'Fei Governance',
   logo: FeiLogo,
-  primaryColor: '#5555FF',
-  secondaryColor: '#E3E3FF',
+  primaryColor: '#5555FF', // TO UPDATE
+  secondaryColor: '#E3E3FF', // TO UPDATE
   token: serializeToken(FEI),
   governanceAddress: FEI_GOVERNANCE_ADDRESS,
   social: '@feiprotocol',
+  emoji: '🌱'
+}
+
+export const GITCOIN_GOVERNANCE_ADDRESS = '0xdbd27635a534a3d3169ef0498beb56fb9c937489'
+export const GTC_ADDRESS = '0xde30da39c46104798bb5aa3fe8b9e0e1f348163f'
+const GTC = new Token(ChainId.MAINNET, GTC_ADDRESS, 18, 'GTC', 'Gitcoin')
+
+export const GITCOIN_GOVERNANCE: GovernanceInfo = {
+  id: 'gtc',
+  name: 'Gitcoin Governance',
+  logo: GitcoinLogo,
+  primaryColor: '#5555FF', // TO UPDATE
+  secondaryColor: '#E3E3FF', // TO UPDATE
+  token: serializeToken(GTC),
+  governanceAddress: GITCOIN_GOVERNANCE_ADDRESS,
+  social: '@gitcoin',
   emoji: '🌱'
 }
 
@@ -131,7 +149,8 @@ export const SUPPORTED_PROTOCOLS: { [id: string]: GovernanceInfo } = {
   aave: AAVE_GOVERNANCE,
   pool: POOL_TOGETHER_GOVERNANCE,
   radicle: RADICLE_GOVERNANCE,
-  fei: FEI_GOVERNANCE
+  fei: FEI_GOVERNANCE,
+  gitcoin: GITCOIN_GOVERNANCE,
 }
 
 export const CURRENT_SUPPORTED_PROTOCOLS = [
@@ -140,7 +159,8 @@ export const CURRENT_SUPPORTED_PROTOCOLS = [
   AAVE_GOVERNANCE,
   POOL_TOGETHER_GOVERNANCE,
   RADICLE_GOVERNANCE,
-  FEI_GOVERNANCE
+  FEI_GOVERNANCE,
+  GITCOIN_GOVERNANCE,
 ];
 
 export const clientMapping = {
@@ -150,4 +170,5 @@ export const clientMapping = {
   [AAVE_GOVERNANCE.id]: aaveClient,
   [COMPOUND_GOVERNANCE.id]: compoundClient,
   [FEI_GOVERNANCE.id]: feiClient,
+  [GITCOIN_GOVERNANCE.id]: gitcoinClient,
 }

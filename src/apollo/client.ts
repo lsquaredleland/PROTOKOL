@@ -43,3 +43,10 @@ export const feiClient = new ApolloClient({
   }),
   cache: new InMemoryCache()
 })
+
+export const gitcoinClient = new ApolloClient({
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/timg512372/gitcoin-governance'
+  }),
+  cache: new InMemoryCache()
+})
