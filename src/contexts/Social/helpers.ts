@@ -1,32 +1,37 @@
-import { Identities } from './types'
-// Endpoints
-const VERIFIED_JSON = 'https://api.github.com/repos/uniswap/sybil-list/contents/verified.json'
+import { TallyIdentities } from './types'
 
 
-export async function fetchAllIdentities(): Promise<Identities | undefined> {
+export async function fetchAllTallyIdentities(
+  addresses: Set<string>
+): Promise<TallyIdentities | undefined> {
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ addresses: Array.from(addresses) })
+  };
+
   try {
-    return fetch(VERIFIED_JSON)
-      .then(async res => {
-        if (!res || res.status !== 200) {
-          return Promise.reject('Unable to fetch verified handles')
-        } else {
-          return res
-            .json()
-            .then(data => {
-              const content = data.content
-              const decodedContent = atob(content)
-              const parsed = JSON.parse(decodedContent)
-              return parsed
-            })
-            .catch(() => {
-              return Promise.reject('Error fetch verified handle data')
-            })
-        }
-      })
-      .catch(() => {
-        return undefined
-      })
+    return fetch('https://identity.withtally.com/user/profiles/by/address', requestOptions)
+    .then(async res => {
+      if (!res || res.status !== 200) {
+        return Promise.reject('Unable to fetch Tally data')
+      } else {
+        return res
+          .json()
+          .then(data => {
+            const content = data.data
+            return content.usersByAddress
+          })
+          .catch(() => {
+            return Promise.reject('Error fetch verified Tally data')
+          })
+      }
+    })
+    .catch(() => {
+      return undefined
+    })
+      
   } catch (e) {
-    return Promise.reject('Error fetch verified handle data')
+    return Promise.reject('Error fetching Tally identities')
   }
 }

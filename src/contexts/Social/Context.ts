@@ -1,12 +1,14 @@
 import { createContext } from "react";
-import { Identities } from "./types";
+import { TallyIdentities } from "./types";
 
 interface SocialContext {
-  allIdentities: Identities | undefined;
+  tallyIdentities: TallyIdentities;
+  setAddresses: (addresses: Set<string>) => void;
 }
 
 const Context = createContext<SocialContext>({
-  allIdentities: {},
+  tallyIdentities: {},
+  setAddresses: (addresses: Set<string>) => {},
 });
 
 export default Context;

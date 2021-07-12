@@ -11,7 +11,10 @@ import { useCallback } from "react";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import difference from "lodash/difference";
+import isEmpty from "lodash/isEmpty";
+import intersection from "lodash/intersection";
 import { ProtocolPrices } from "contexts/Prices/types";
+import { TallyIdentities } from "contexts/Social/types";
 
 // Warry
 import { usePrices } from "contexts/Prices";
@@ -25,17 +28,22 @@ interface RawResponse {
 const generateleaderboardRankings = function(
   activeLeaderboard: GovernanceInfo[],
   rawData: React.MutableRefObject<RawResponse>,
-  currentPrices: ProtocolPrices
+  currentPrices: ProtocolPrices,
+  tallyIdentities: TallyIdentities, 
 ): DelegateDataMulti[] {
   const protocolKeys = activeLeaderboard.map((protocol: GovernanceInfo) => protocol.id)
   
   let allRawData: Array<DelegateDataPrice> = [];
   protocolKeys.forEach((protocolId: string) => {
     const intermediate: DelegateDataPrice[] = rawData.current[protocolId].map((datapoint: DelegateData) => {
+      const tally = tallyIdentities[datapoint.id.toLowerCase()]
       return ({
         ...datapoint,
         value: datapoint.delegatedVotes * currentPrices[protocolId],
         protocolId,
+        handle: tally?.twitterUsername,
+        displayName: tally?.displayName,
+        imageURL: tally?.avatarUrl,
       })
     })
     allRawData = allRawData.concat(intermediate);
@@ -47,7 +55,7 @@ const generateleaderboardRankings = function(
   const delegatesIds = Object.keys(grouped);
   const delegatesValue: DelegateDataMulti[] = delegatesIds.map((id) => {
     const delegateDatas: DelegateDataPrice[] = grouped[id];
-    const { EOA, autonomous, handle, imageURL } = delegateDatas[0]
+    const { EOA, autonomous, handle, imageURL, displayName } = delegateDatas[0]
     const value = delegateDatas.reduce((accumulator: number, current: DelegateDataPrice) => {
       return accumulator + current.value
     }, 0)
@@ -64,7 +72,8 @@ const generateleaderboardRankings = function(
       handle,
       imageURL,
       value,
-      perProtocol
+      perProtocol,
+      displayName,
     }
   })
 
@@ -87,8 +96,19 @@ const Provider: React.FC = ({ children }) => {
   const [searchDataLoaded, setSearchDataLoaded] = useState<Array<String>>([]); // SEARCH
 
   const { currentPrices } = usePrices()
+  const { setAddresses, tallyIdentities } = useSocial();
   // Question: calling a Context within another Context ok?
   // ^b/c active protocols are being passed in rather than grabbed like usePrices() here...
+
+  useEffect(() => {
+    const protocolKeys = activeLeaderboard.map((protocol: GovernanceInfo) => protocol.id)
+    const currentData = Object.keys(rawData.current)
+
+    // Only setting once all data has loaded
+    if (intersection(currentData, protocolKeys).length === protocolKeys.length && !isEmpty(tallyIdentities)) {
+      setLeaderboardRankings(generateleaderboardRankings(activeLeaderboard, rawData, currentPrices, tallyIdentities))
+    }
+  }, [tallyIdentities, activeLeaderboard, currentPrices, setLeaderboardRankings])
 
   useEffect(() => {
     const diff = difference(activeLeaderboard.map(({id}: GovernanceInfo) => id), dataLoaded)
@@ -97,10 +117,17 @@ const Provider: React.FC = ({ children }) => {
       return // ensuring that all data is loaded prior to running
     }
 
-    setLeaderboardRankings(generateleaderboardRankings(activeLeaderboard, rawData, currentPrices))
+    const allAddresses = new Set(
+      Object.values(rawData.current)
+        .flat(1)
+        .map((delegate: DelegateData) => delegate.id)
+    )
+    setAddresses(allAddresses);
+
+    setLeaderboardRankings(generateleaderboardRankings(activeLeaderboard, rawData, currentPrices, {}))
     setLoading(false)
     setError('')
-  }, [activeLeaderboard, currentPrices, dataLoaded, setLoading, setError])
+  }, [activeLeaderboard, currentPrices, dataLoaded, setLoading, setError, setAddresses])
 
   // Search (little hacky)
   useEffect(() => {
@@ -108,12 +135,18 @@ const Provider: React.FC = ({ children }) => {
     if (diff.length > 0) {
       return // ensuring that all data is loaded prior to running
     }
+
+    const allAddresses = new Set(
+      Object.values(rawSearchData.current)
+        .flat(1)
+        .map((delegate: DelegateData) => delegate.id)
+    )
+    setAddresses(allAddresses);
     
-    setSearchRankings(generateleaderboardRankings(activeLeaderboard, rawSearchData, currentPrices))
-  }, [activeLeaderboard, currentPrices, searchDataLoaded, searchAddress])
+    setSearchRankings(generateleaderboardRankings(activeLeaderboard, rawSearchData, currentPrices, {}))
+  }, [activeLeaderboard, currentPrices, searchDataLoaded, searchAddress, setAddresses])
 
   const { library } = useActiveWeb3React();
-  const { allIdentities } = useSocial();
 
   // Behaviour seems the same w/ or w/o useCallback?
   const fetchTopDelegateData = useCallback(
@@ -123,20 +156,19 @@ const Provider: React.FC = ({ children }) => {
     ) => {
       try {
         library &&
-        allIdentities &&
-          client &&
-          fetchTopDelegates(client, library, allIdentities, setError).then(async delegateData => {
-            if (delegateData) {
-              rawData.current[id] = delegateData
-              setDataLoaded((prevDataLoaded) => prevDataLoaded.concat([id]))
-            }
-          })
+        client &&
+        fetchTopDelegates(client, library, setError).then(async delegateData => {
+          if (delegateData) {
+            rawData.current[id] = delegateData
+            setDataLoaded((prevDataLoaded) => prevDataLoaded.concat([id]))
+          }
+        })
       } catch (e) {  
         console.log('ERROR:' + e)
         setError('ERROR:' + e)
       }
     },
-    [library, allIdentities, rawData, setError]
+    [library, rawData, setError]
   )
 
   // SEARCH
@@ -148,19 +180,18 @@ const Provider: React.FC = ({ children }) => {
       console.log([searchAddress])
       try {
         library &&
-        allIdentities &&
-          client &&
-          fetchSearchedDelegate(client, library, allIdentities, setError, [searchAddress.toLowerCase()]).then(async delegateData => {
-            if (delegateData) {
-              rawSearchData.current[id] = delegateData
-              setSearchDataLoaded((prev) => prev.concat([id]))
-            }
-          })
+        client &&
+        fetchSearchedDelegate(client, library, setError, [searchAddress.toLowerCase()]).then(async delegateData => {
+          if (delegateData) {
+            rawSearchData.current[id] = delegateData
+            setSearchDataLoaded((prev) => prev.concat([id]))
+          }
+        })
       } catch (e) {  
         console.log('ERROR:' + e)
       }
     },
-    [library, allIdentities, searchAddress, setError]
+    [library, searchAddress, setError]
   )
   
   useEffect(() => {

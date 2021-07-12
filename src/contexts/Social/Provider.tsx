@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from "react";
 import Context from "./Context";
-import { Identities } from "./types";
-import { fetchAllIdentities } from "./helpers";
+import { TallyIdentities } from "./types";
+import { fetchAllTallyIdentities } from "./helpers";
 
 
 const Provider: React.FC = ({ children }) => {
-  const [allIdentities, setAllIdentities] = useState<Identities | undefined>()
+  const [addresses, setAddresses] = useState<Set<string>>(new Set())
+  const [tallyIdentities, setTallyIdentities] = useState<TallyIdentities>({});
 
   useEffect(() => {
-    async function fetchData() {
-      const results: Identities | undefined = await fetchAllIdentities()
+    async function fetchData(addresses: Set<string>) {
+      const results: TallyIdentities | undefined = await fetchAllTallyIdentities(addresses)
       if (results) {
-        setAllIdentities(results)
+        setTallyIdentities(results)
       }
     }
-    if (!allIdentities) {
-      fetchData()
+    if (addresses.size > 0) {
+      fetchData(addresses)
     }
-  }, [allIdentities, setAllIdentities])
+  }, [addresses, setTallyIdentities])
 
   return (
     <Context.Provider
       value={{
-        allIdentities
+        tallyIdentities,
+        setAddresses,
       }}
     >
       {children}

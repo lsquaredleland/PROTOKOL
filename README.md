@@ -9,7 +9,6 @@ Here we wanted to see who are the crypto KOLs in governance, i.e., who has the m
 * add protocol overviews on the side (1 card per protocol)
 * Create individual profiles where users can look up specific addresses + integrate into the link.
 
-
 ## Footnotes
 
 * How to fix TWITTER_WORKER_URL to work most of the time?

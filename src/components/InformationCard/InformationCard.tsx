@@ -85,7 +85,7 @@ export default function InformationCard({ active, setActive} : InformationCardPr
         { active ? <AlertText /> : null}
         <h3>Legend</h3>
         <StyledLi>🏆 Rank</StyledLi>
-        <StyledLi>📛 Address or Twitter handle (via <a href="https://sybil.org">Sybil.org)</a></StyledLi>
+        <StyledLi>📛 Address or Twitter handle (via <a href="https://withtally.com">Tally Identity API</a>)</StyledLi>
         <StyledLi> 💪 Vote weight (Σ votes delegated x token value)</StyledLi>
         <StyledLi> 👥 Total number of delegates</StyledLi>
         <StyledLi>🗳️ Total number of votes</StyledLi> 

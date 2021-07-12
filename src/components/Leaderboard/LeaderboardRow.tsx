@@ -3,7 +3,6 @@ import { DelegateDataMulti, DelegateDataPrice } from 'contexts/Leaderboard/types
 import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import { formatPrice, nFormatter } from 'utils/misc';
-import { useTwitterProfileData } from 'hooks/social';
 import emptyURL from 'assets/images/emptyprofile.png';
 import { Row, VoteWeight, RankNumber, SmallNumber } from './styles';
 import { GovernanceInfo } from 'contexts/Protocols/types';
@@ -111,18 +110,17 @@ const ExpandedRow = ({ perProtocol }: { perProtocol: DelegateDataPrice[] }) => {
 }
 
 export function LeaderboardRow({ rank, data, visible }: LeaderboardRowProps) {
-  const { id, value, handle, perProtocol } = data;
-  const handleOrAddress = handle ? `@${handle}` : formatAddress(id);
-  const link = handle ? `https://twitter.com/${handle}` : `https://etherscan.io/address/${id}`;
-
-  const twitterData = useTwitterProfileData(handle);
-  const imageURL: string | undefined = twitterData?.profileURL;
-  
+  const { id, value, handle, perProtocol, displayName, imageURL } = data;
+  const handleOrAddress = handle ? `@${handle}` : displayName ? displayName : formatAddress(id)
+  const etherscanLink = `https://etherscan.io/address/${id}`;
+  const link = handle ? `https://twitter.com/${handle}` : etherscanLink
+    
   const [expanded, setExpanded] = useState<boolean>(false);
 
   // For vote weight formatting => should isMobile be dynamic?
   // could u/ a useWindowDimensions() hook...
 
+  // TODO: handle broken images
   return (
     <>
       <MainRow

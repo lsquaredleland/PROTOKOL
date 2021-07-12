@@ -1,18 +1,17 @@
-export interface TwitterEntry {
-  handle: string | undefined
-  timestamp: number
+export interface TallyAddress {
+  [address: string]: string
 }
 
-export interface UncategorizedContentEntry {
-  name: string
-  contentURL: string
-}
-
-export interface Identity {
-  twitter: TwitterEntry | undefined
-  other: UncategorizedContentEntry | undefined
-}
-
-export interface Identities {
-  [address: string]: Identity
+export interface TallyIdentities {
+  [address: string]: {
+    tallId: string,
+    displayName: string,
+    description: string,
+    avatarUrl: string,
+    twitterUsername: string,
+    discordHandle: string,
+    source: string,
+    attestationUrl: string,
+    addresses: Array<TallyAddress>,
+  }
 }

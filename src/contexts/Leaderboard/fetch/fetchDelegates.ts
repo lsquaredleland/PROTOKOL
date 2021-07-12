@@ -1,11 +1,9 @@
 import { TOP_DELEGATES, TOP_DELEGATES_OFFSET, DELEGATES_FROM_LIST } from "apollo/queries"
 import { Web3Provider } from '@ethersproject/providers'
 import { DelegateData } from '../types'
-import fetchProfileData from 'utils/fetchProfileData'
 import isAddress from 'utils/isAddress'
 import { DocumentNode } from 'graphql'
 import { AUTONOMOUS_PROPOSAL_BYTECODE } from 'constants/proposals'
-import { Identities } from "contexts/Social/types"
 import { Dispatch, SetStateAction } from "react"
 
 
@@ -24,7 +22,6 @@ interface DelegateResponse {
 async function fetchDelegatesFromClient(
   client: any,
   library: Web3Provider,
-  allIdentities: Identities,
   setError: Dispatch<SetStateAction<string>>,
   query: DelegateQuery,
 ): Promise<DelegateData[] | null> {
@@ -38,31 +35,6 @@ async function fetchDelegatesFromClient(
             return library?.getCode(d.id)
           })
         )
-        // for each handle - get twitter profile data ,
-        const handles = await Promise.all(
-          res.data.delegates.map(async (a: DelegateData) => {
-            const checksummed = isAddress(a.id)
-            const handle = checksummed ? allIdentities?.[checksummed]?.twitter?.handle : undefined
-
-            let profileData
-            try {
-              if (handle) {
-                const res = await fetchProfileData(handle)
-                if (res) {
-                  profileData = res
-                }
-              }
-            } catch (e) {
-              profileData = undefined
-            }
-
-            return {
-              account: a.id,
-              handle,
-              imageURL: profileData?.data?.profile_image_url
-            }
-          })
-        )
 
         return res.data.delegates.map((d, i) => {
           const checksummed = isAddress(d.id)
@@ -74,8 +46,8 @@ async function fetchDelegatesFromClient(
             ...d,
             EOA: typed[i] === '0x',
             autonomous: typed[i] === AUTONOMOUS_PROPOSAL_BYTECODE,
-            handle: handles.find(h => h.account.toLowerCase() === d.id.toLowerCase())?.handle,
-            imageURL: handles.find(h => h.account.toLowerCase() === d.id.toLowerCase())?.imageURL
+            handle: '', // handles.find(h => h.account.toLowerCase() === d.id.toLowerCase())?.handle,
+            imageURL: '' // handles.find(h => h.account.toLowerCase() === d.id.toLowerCase())?.imageURL
           }
         })
       })
@@ -94,10 +66,9 @@ async function fetchDelegatesFromClient(
 export async function fetchTopDelegates(
   client: any,
   library: Web3Provider,
-  allIdentities: Identities,
   setError: Dispatch<SetStateAction<string>>,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
+  return fetchDelegatesFromClient(client, library, setError, {
     query: TOP_DELEGATES,
     fetchPolicy: 'cache-first'
   })
@@ -106,11 +77,10 @@ export async function fetchTopDelegates(
 export async function fetchTopDelegatesOffset(
   client: any,
   library: Web3Provider,
-  allIdentities: Identities,
   setError: Dispatch<SetStateAction<string>>,
   maxFetched: number,
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
+  return fetchDelegatesFromClient(client, library, setError, {
     query: TOP_DELEGATES_OFFSET,
     variables: {
       skip: maxFetched
@@ -122,11 +92,10 @@ export async function fetchTopDelegatesOffset(
 export async function fetchSearchedDelegate(
   client: any,
   library: Web3Provider,
-  allIdentities: Identities,
   setError: Dispatch<SetStateAction<string>>,
   searchedAddress: string[]
 ): Promise<DelegateData[] | null> {
-  return fetchDelegatesFromClient(client, library, allIdentities, setError, {
+  return fetchDelegatesFromClient(client, library, setError, {
     query: DELEGATES_FROM_LIST,
     variables: {
       list: searchedAddress
